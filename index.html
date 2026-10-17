@@ -155,7 +155,10 @@ input[inputmode="numeric"]{font-family:var(--font-mono);font-variant-numeric:tab
 .tier ul{padding-left:1.1em;display:grid;gap:6px;font-size:14px}
 .tier .tag{display:inline-block;font:500 10px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
 .rng{display:block;font:500 12px/1.4 var(--font-mono);color:var(--accent);margin-top:2px}
-li.hit .rng::before{content:"✓ "}
+.rng.off{color:var(--muted)}
+.either{display:block;font-size:12.5px;color:var(--muted);margin-top:6px}
+.dl{font-size:14px;margin-top:6px}
+.dl b{font-weight:700}
 .amt{text-align:right;font:400 13px/1.5 var(--font-mono);font-variant-numeric:tabular-nums;display:grid;gap:2px}
 .amt b{font-weight:500;font-size:14px}
 .amt span{color:var(--muted)}
@@ -356,7 +359,7 @@ const L90_BAYAR = 'Membayar sanksi administratif sebesar 10% paling lambat tangg
 const L90_TERBIT = 'Membayar sanksi administratif sebesar 10% paling lambat tanggal 31 Desember 2026 dan penerbitan surat tagihan pajak dilakukan dalam periode tanggal 8 Oktober 2026 sampai dengan tanggal 31 Desember 2026.';
 const SKP_B = 'SKPKB, SKPKBT, atau SKP PBB';
 
-const NOTE_REL = 'Batas "1 bulan" dan "2 bulan" dihitung sampai tanggal yang sama pada bulan berikutnya, seperti contoh kasus lampiran (STP 12 Okt 2026: lunas 12 Des 2026 masih 50%). Jika tanggal bayar memenuhi lebih dari satu baris, aplikasi memakai tarif yang lebih besar.';
+const NOTE_REL = 'Batas "1 bulan" dan "2 bulan" dihitung sampai tanggal yang sama pada bulan berikutnya, seperti contoh kasus lampiran (STP 12 Okt 2026: lunas 12 Des 2026 masih 50%). Jika tarif tertinggi punya dua ketentuan, batasnya adalah yang lebih akhir, dan tarif berikutnya baru berlaku setelah batas itu. Contoh kasus lampiran: SKPKB terbit 12 Okt 2026 dilunasi 13 Nov 2026 masih 100%, dilunasi 2 Jan 2027 langsung 25%.';
 const KB_SKP = 'SKP tidak diajukan keberatan, atau keberatannya dicabut dan disetujui DJP, atau tidak dipertimbangkan (Pasal 23 ayat (2) PMK 118/2024 s.t.d.d. PMK 71/2026)';
 const K_SPT = 'SPT Tahunan PPh Tahun Pajak sampai dengan 2025 dan/atau SPT Masa sampai dengan Masa Pajak September 2026, dengan status kurang bayar';
 const K_F = ['STP atau STP PBB diterbitkan dalam periode 8 Oktober 2026 sampai dengan 30 Juni 2027','Pokok pajak, utang pajak, dan/atau sebagian sanksi dibayar sampai dengan 30 Juni 2027'];
@@ -678,6 +681,22 @@ function lineRange(sp,T){
   }
   return lo>hi ? null : [lo,hi];
 }
+/* Rentang efektif per tarif untuk tanggal terbit T. Jika satu tarif punya dua ketentuan,
+   batasnya yang lebih akhir. Tarif berikutnya baru berlaku setelah batas tarif di atasnya,
+   seperti contoh kasus lampiran E angka 2 (SKPKB 12 Okt 2026: 13 Nov 100%, 2 Jan 2027 25%). */
+function effRanges(o,T){
+  let prevEnd = null;
+  return o.tiers.map(t=>{
+    const rs = t.spec.map(sp=>lineRange(sp,T));
+    const ok = rs.filter(Boolean);
+    if(!ok.length) return {r:null,covered:false,ends:rs.map(x=>x?x[1]:null)};
+    const u = [Math.min(...ok.map(x=>x[0])), Math.max(...ok.map(x=>x[1]))];
+    const lo = prevEnd==null ? u[0] : Math.max(u[0], prevEnd+DAY);
+    const r = lo>u[1] ? null : [lo,u[1]];
+    prevEnd = prevEnd==null ? u[1] : Math.max(prevEnd,u[1]);
+    return {r:r, covered:!r, ends:rs.map(x=>x?x[1]:null)};
+  });
+}
 function rangeText(sp,T){
   const r = lineRange(sp,T);
   return r ? fdS(r[0])+' s.d. '+fdS(r[1]) : null;
@@ -694,7 +713,7 @@ function evalRel(o,Ts,Bs){
   if(i>=0) sat.forEach((x,j)=>{ if(j!==i && x.some(Boolean)) extra.push(j); });
   const li = i>=0 ? sat[i].findIndex(Boolean) : -1;
   const line = i>=0 ? o.tiers[i].lines[li] : null;
-  const range = i>=0 ? lineRange(o.tiers[i].spec[li],T) : null;
+  const range = i>=0 ? effRanges(o,T)[i].r : null;
   return {s:'ok',i:i,line:line,range:range,extra:extra,sat:sat};
 }
 
@@ -900,7 +919,8 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     const dateLabel = o.verb==='pokok pajak dilunasi' ? 'Tanggal pelunasan pokok pajak' : 'Tanggal pembayaran sebagian sanksi';
     const vT = st.a.tglT||st.keepT||'', vB = st.a.tglB||st.keepB||'';
     return '<section class="qcard" tabindex="-1"><h2>Kapan '+o.docName+' terbit, dan kapan '+o.verb+'?</h2>'+
-      '<p class="hint">Lampiran memakai hitungan bulan sejak tanggal terbit, jadi isi kedua tanggal. Belum membayar? Isi tanggal rencana bayar untuk melihat tarifnya.</p>'+
+      '<p class="hint">Lampiran memakai hitungan bulan sejak tanggal terbit, jadi isi kedua tanggal. Belum membayar? Isi tanggal rencana bayar untuk melihat tarifnya.'+
+      (o.tiers.some(t=>t.lines.length>1) ? ' Untuk '+o.docName+' yang terbit 8 Okt s.d. 31 Des 2026, batas tarif tertinggi adalah 31 Des 2026 atau 1 bulan setelah terbit, mana yang lebih akhir. Contoh: terbit 9 Okt 2026, batasnya 31 Des 2026; terbit 10 Des 2026, batasnya 10 Jan 2027.' : '')+'</p>'+
       '<p class="eyebrow">Persyaratan menurut lampiran</p>'+tiersHTML(o,0,-1,null,null)+
       '<div class="fields"><div class="field"><label for="tgT">Tanggal '+o.docName+' terbit</label><input id="tgT" type="date" value="'+vT+'"></div>'+
       '<div class="field"><label for="tgB">'+dateLabel+'</label><input id="tgB" type="date" value="'+vB+'"></div></div>'+
@@ -923,26 +943,45 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
   function notesHTML(o){
     return o.notes.length ? '<div class="note"><ul>'+o.notes.map(n=>'<li>'+n+'</li>').join('')+'</ul></div>' : '';
   }
-  function tiersHTML(o, nom, on, T, sat){
+  const actVerb = o => o.verb==='pokok pajak dilunasi' ? 'lunasi pokok' : 'bayar sanksi';
+  function tiersHTML(o, nom, on, T, B){
+    const eff = (T && o.mode==='rel') ? effRanges(o,T) : null;
     return '<div class="tiers">'+o.tiers.map(function(t,i){
       const pay = nom ? nom*(100-t.pct)/100 : null;
       const amt = nom ? '<div class="amt"><b>'+rp(pay)+'</b><span>dibayar</span><span>'+rp(nom-pay)+' dihapus</span></div>' : '';
       const lis = t.lines.map(function(l,j){
-        let rng = '', hit = false;
-        if(T && t.spec){
-          const rt = rangeText(t.spec[j],T);
-          rng = '<span class="rng">'+(rt ? 'Untuk terbit '+fdS(T)+': '+rt : 'Tidak berlaku untuk tanggal terbit ini')+'</span>';
-          hit = !!(sat && sat[i] && sat[i][j]);
-        } else if(!t.spec && t.until && j===0){
+        let rng = '';
+        if(!t.spec && t.until && j===0){
           const from = D(t.from), until = D(t.until);
           const s = TODAY<from ? 'Mulai '+fdS(from) : (TODAY<=until ? 'Periode berjalan · berakhir '+dueText(until) : 'Periode sudah berakhir');
           rng = '<span class="rng">'+s+'</span>';
         }
-        return '<li class="'+(hit?'hit':'')+'">'+l+rng+'</li>';
+        return '<li>'+l+rng+'</li>';
       }).join('');
+      let foot = '';
+      if(t.spec && t.lines.length>1) foot += '<span class="either">Dari kedua ketentuan ini, yang berlaku adalah batas yang lebih akhir.</span>';
+      if(eff){
+        const e = eff[i];
+        if(e.r){
+          const hit = B!=null && B>=e.r[0] && B<=e.r[1];
+          foot += '<span class="rng">'+(hit?'✓ ':'')+'Untuk terbit '+fdS(T)+': '+actVerb(o)+' '+fdS(e.r[0])+' s.d. '+fdS(e.r[1])+'</span>';
+        } else {
+          foot += '<span class="rng off">'+(e.covered ? 'Tidak berlaku untuk terbit '+fdS(T)+', karena rentangnya sudah tercakup tarif yang lebih besar' : 'Tidak berlaku untuk tanggal terbit ini')+'</span>';
+        }
+      }
       return '<div class="tier'+(i===on?' on':'')+'"><div class="pc t'+t.pct+'">'+t.pct+'%<small>pengurangan</small></div>'+
-        '<div>'+(i===on?'<span class="tag">Sesuai jawaban</span>':'')+'<ul>'+lis+'</ul></div>'+amt+'</div>';
+        '<div>'+(i===on?'<span class="tag">Sesuai jawaban</span>':'')+'<ul>'+lis+'</ul>'+foot+'</div>'+amt+'</div>';
     }).join('')+'</div>';
+  }
+  /* Kalimat batas waktu untuk tarif terpilih, termasuk penjelasan jika ada dua ketentuan. */
+  function deadlineHTML(o,i,T){
+    const e = effRanges(o,T)[i]; if(!e.r) return '';
+    const t = o.tiers[i];
+    const what = o.verb==='pokok pajak dilunasi' ? 'pelunasan pokok pajak' : 'pembayaran '+(t.pct===90?'10%':'25%')+' sanksi';
+    let why = '';
+    const ends = e.ends.filter(x=>x!=null);
+    if(t.lines.length>1 && ends.length>1 && ends[0]!==ends[1]) why = ' Kedua ketentuan memberi batas '+ends.map(fdS).join(' dan ')+'; yang berlaku adalah yang lebih akhir.';
+    return '<p class="dl">Batas '+what+' untuk tarif ini: <b>'+fdS(e.r[1])+'</b>.'+why+'</p>';
   }
 
   /* Cara mengajukan permohonan: KPP tempat terdaftar atau Coretax. */
@@ -1078,15 +1117,13 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     const ans = rel
       ? 'Jawaban: '+o.docName+' terbit '+fdS(T)+', '+(o.verb==='pokok pajak dilunasi'?'dilunasi ':'dibayar ')+fdS(D(st.a.tglB))+'.'
       : 'Jawaban: '+r.opt.t+'.';
-    let extraTxt = '';
-    if(rel && r.ev.extra.length) extraTxt = ' Tanggal ini juga memenuhi baris tarif '+r.ev.extra.map(j=>o.tiers[j].pct+'%').join(' dan ')+'. Aplikasi memakai tarif yang lebih besar.';
     let pick;
     if(r.tier>=0){
       const t = o.tiers[r.tier];
-      const lines = rel ? [r.ev.line] : t.lines;
       pick = '<div class="pick"><div class="tile t'+t.pct+'">'+t.pct+'%<small>pengurangan</small></div><div>'+
-        '<p class="pk1">Sanksi dikurangi '+t.pct+'%</p><p class="pk2">'+ans+extraTxt+'</p>'+
-        '<ul>'+lines.map(l=>'<li>'+l+'</li>').join('')+'</ul>'+dueHTML(o,r)+'</div></div>';
+        '<p class="pk1">Sanksi dikurangi '+t.pct+'%</p><p class="pk2">'+ans+'</p>'+
+        (rel ? deadlineHTML(o,r.tier,T) : '')+
+        '<ul>'+t.lines.map(l=>'<li>'+l+'</li>').join('')+'</ul>'+dueHTML(o,r)+'</div></div>';
     } else {
       pick = '<div class="pick"><div class="tile t0">0%<small>pengurangan</small></div><div>'+
         '<p class="pk1">Tidak ada pengurangan</p><p class="pk2">'+ans+'</p>'+
@@ -1128,7 +1165,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     }
     document.getElementById('calcmsg').innerHTML = msg;
     const rel = o.mode==='rel';
-    box.innerHTML = tiersHTML(o, nom, r.tier, rel?D(st.a.tglT):null, rel?r.ev.sat:null);
+    box.innerHTML = tiersHTML(o, nom, r.tier, rel?D(st.a.tglT):null, rel?D(st.a.tglB):null);
   }
 
   /* Peta alur */
@@ -1260,7 +1297,8 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     if(rel) L1.push('Tanggal terbit: '+fdS(D(st.a.tglT)),'Tanggal bayar: '+fdS(D(st.a.tglB)));
     else L1.push('Periode: '+r.opt.t);
     L1.push('Pengurangan: '+pct);
-    if(r.tier>=0) L1.push('Ketentuan: '+(rel?r.ev.line:o.tiers[r.tier].lines.join(' / ')));
+    if(r.tier>=0) L1.push('Ketentuan: '+o.tiers[r.tier].lines.join(' / '));
+    if(rel && r.tier>=0 && r.ev.range) L1.push('Rentang bayar untuk tarif ini: '+fdS(r.ev.range[0])+' s.d. '+fdS(r.ev.range[1]));
     L1.push('Langkah:');
     stepsList(o,r).forEach((x,i)=>L1.push((i+1)+'. '+x));
     L1.push('Catatan: perkiraan dari alat bantu. Keputusan ada pada DJP.');
