@@ -765,7 +765,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     if(n===0) return 'hari ini';
     return 'sudah lewat';
   }
-  const tplBox = lead => '<div class="tpl"><p><b>Template dokumen</b>'+lead+'</p><a class="btn" href="'+TEMPLATE_URL+'" target="_blank" rel="noopener">Buka template</a><span class="tpl-url">'+TEMPLATE_URL+' · Google Drive</span></div>';
+  const tplBox = lead => '<div class="tpl"><p><b>Template, aturan, dan panduan Coretax</b>'+lead+'</p><a class="btn" href="'+TEMPLATE_URL+'" target="_blank" rel="noopener">Buka folder</a><span class="tpl-url">'+TEMPLATE_URL+' · Google Drive</span></div>';
   const helpBox = (title, items) => '<details class="help"><summary>'+title+'</summary><ul class="rules" style="padding-top:8px">'+items.map(x=>'<li>'+x+'</li>').join('')+'</ul></details>';
 
   const KEYDATES = [
@@ -795,7 +795,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     const a = st.a, ob = objekOf(a);
     if(id==='syarat') return {h:'Bisakah syarat umum ini dipenuhi?', hint:'Diktum KETIGA dan KEEMPAT KEP-239/PJ/2026 serta Pasal 23 PMK 118/2024 s.t.d.d. PMK 71/2026. Berlaku untuk semua baris. Tarifnya tetap bisa dilihat lebih dulu.', rules:SYARAT_UMUM,
       opts:[{v:'ya',t:'Ya, bisa dipenuhi'},{v:'cek',t:'Belum tahu, lihat tarifnya dulu',s:'Syarat ditampilkan lagi di hasil'},{v:'tidak',t:'Ada yang tidak bisa dipenuhi'}],
-      extra:tplBox('Sudah tahu tarifnya? Template surat permohonan dan dua surat pernyataan (Diktum KEEMPAT KEP-239/PJ/2026) bisa langsung diunduh.')+helpBox('Syarat formal permohonan (Pasal 23 dan 24)', SYARAT_FORMAL.concat([SYARAT_KECUALI]))};
+      extra:tplBox('Sudah tahu tarifnya? Di folder ini ada template surat permohonan dan dua surat pernyataan (Diktum KEEMPAT KEP-239/PJ/2026), aturan terkait, serta PDF langkah-langkah pengajuan dan penginputan permohonan di Coretax.')+helpBox('Syarat formal permohonan (Pasal 23 dan 24)', SYARAT_FORMAL.concat([SYARAT_KECUALI]))};
     if(id==='waktu') return {h:'Kapan SKP atau STP yang memuat sanksi ini terbit?', hint:'Kebijakan ini dimulai 8 Oktober 2026. Jawaban ini menentukan tabel lampiran yang dipakai.',
       opts:[
         {v:'sebelum',t:'Sebelum 8 Oktober 2026',d:'Semua SKP atau STP yang terbit sebelum tanggal itu, apa pun asalnya: pembetulan SPT, pengawasan, pemeriksaan, atau penagihan.',s:'Penagihan · Lampiran C · Diktum KESATU huruf e'},
@@ -996,8 +996,9 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
   const AJU_PATH = ['Layanan Wajib Pajak','Layanan Administrasi','Buat Permohonan Layanan Administrasi','AS.26-03 Keberatan Non Keberatan','AS.26-03 LA.26-03 Permohonan Pengurangan atau Penghapusan Sanksi Administratif (Pasal 36 ayat (1) huruf a UU KUP)'];
   const AJU_LAMP = ['Alasan penghapusan sanksi.','Surat pernyataan sesuai KEP-239/PJ/2026 (lampiran F dan G).','Bukti pelunasan pokok pajak, dalam hal terdapat pokok dalam STP, atau bukti pembayaran sebagian sanksi administratif.'];
   const ajuLead = () => 'Sampaikan permohonan paling lambat 1 Oktober 2028 ('+dueText(D(PERMOHONAN))+') ke KPP tempat Wajib Pajak terdaftar, atau melalui Coretax menu:';
-  const ajuText = () => ajuLead()+'\n   '+AJU_PATH.join(' > ')+'\n   Sertakan atau unggah:\n'+AJU_LAMP.map(x=>'   - '+x).join('\n')+'\n   Pengurangan tidak diberikan otomatis.';
+  const ajuText = () => ajuLead()+'\n   '+AJU_PATH.join(' > ')+'\n   Panduan langkah penginputan di Coretax (PDF) dan aturan terkait: '+TEMPLATE_URL+'\n   Sertakan atau unggah:\n'+AJU_LAMP.map(x=>'   - '+x).join('\n')+'\n   Pengurangan tidak diberikan otomatis.';
   const ajuHTML = () => ajuLead()+'<span class="path">'+AJU_PATH.map((x,i)=>'<span style="padding-left:'+(i*10)+'px">'+(i?'<i aria-hidden="true">› </i>':'')+x+'</span>').join('')+'</span>'+
+    '<span class="sub">Panduan langkah penginputan di Coretax (PDF) dan aturan terkait ada di folder <a href="'+TEMPLATE_URL+'" target="_blank" rel="noopener">bit.ly/psa428</a>.</span>'+
     'Sertakan atau unggah:<ul>'+AJU_LAMP.map(x=>'<li>'+x+'</li>').join('')+'</ul><span class="sub">Pengurangan tidak diberikan otomatis.</span>';
 
   /* Langkah yang perlu dilakukan, ditulis sebagai teks biasa agar ikut disalin. */
@@ -1144,7 +1145,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     }
     const cek = st.a.syarat==='cek' ? '<div class="note"><p class="nt">Syarat umum belum dipastikan</p><ul>'+SYARAT_UMUM.map(x=>'<li>'+x+'</li>').join('')+'</ul></div>' : '';
     const steps = '<div class="sect"><h3>Yang perlu dilakukan</h3><ol class="steps">'+stepsList(o,r).map((x,i,all)=>'<li>'+(i===all.length-1 ? ajuHTML() : x.replace(TEMPLATE_URL,'<a href="'+TEMPLATE_URL+'" target="_blank" rel="noopener">bit.ly/psa428</a>'))+'</li>').join('')+'</ol>'+
-      tplBox('Template surat permohonan pengurangan sanksi dan surat pernyataan yang disyaratkan KEP-239/PJ/2026.')+'</div>';
+      tplBox('Template surat permohonan dan surat pernyataan yang disyaratkan KEP-239/PJ/2026, aturan terkait, serta PDF langkah-langkah penginputan permohonan di Coretax.')+'</div>';
     const head = '<section class="verdict" tabindex="-1"><div class="vhead"><p class="eyebrow">Hasil · '+TAHAP[o.tahap]+' · '+s.p+'</p><h2>'+o.name+'</h2></div>'+
       pick+nowTip+cek+steps+factsHTML(o)+notesHTML(o)+scopeHTML(o, st.a.sanksi)+draftHTML()+
       '<div class="row"><button class="btn" data-copy="1">Salin ringkasan</button><button class="btn ghost" data-edit="'+(rel?'tglT':'bayar')+'">Ubah '+(rel?'tanggal':'periode')+'</button><button class="btn ghost" data-restart="1">Mulai ulang</button></div></section>';
@@ -1276,7 +1277,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     if(!placed) items.push('<li class="now"><span class="dt">'+fdS(TODAY)+'</span><span class="tt">Hari ini</span></li>');
     return '<div class="guide">'+
       '<section class="gsec"><h2>Tanggal penting</h2><p class="hint">Baris yang dihitung dari tanggal terbit, misalnya hasil pemeriksaan, punya batas sendiri. Aplikasi menghitungnya di langkah terakhir.</p><ul class="tl">'+items.join('')+'</ul></section>'+
-      '<section class="gsec"><h2>Template dokumen</h2><p class="hint">Dokumen yang dilampirkan pada permohonan: surat permohonan pengurangan atau penghapusan sanksi, surat pernyataan tidak mengajukan gugatan atau upaya hukum lain (lampiran F), dan surat pernyataan sanksi timbul karena kekhilafan atau bukan karena kesalahan (lampiran G).</p>'+tplBox('Folder Google Drive berisi template surat permohonan dan surat pernyataan.')+'</section>'+
+      '<section class="gsec"><h2>Template, aturan, dan panduan Coretax</h2><p class="hint">Dokumen yang dilampirkan pada permohonan: surat permohonan pengurangan atau penghapusan sanksi, surat pernyataan tidak mengajukan gugatan atau upaya hukum lain (lampiran F), dan surat pernyataan sanksi timbul karena kekhilafan atau bukan karena kesalahan (lampiran G). Folder yang sama juga memuat aturan terkait dan PDF langkah-langkah pengajuan di Coretax.</p>'+tplBox('Folder Google Drive berisi template surat, aturan terkait, dan PDF panduan penginputan permohonan di Coretax.')+'</section>'+
       '<section class="gsec"><h2>Cara mengajukan permohonan</h2><div class="aju">'+ajuHTML()+'</div></section>'+
       '<section class="gsec"><h2>Syarat umum</h2><p class="hint">Diktum KETIGA dan KEEMPAT KEP-239/PJ/2026, serta Pasal 23 ayat (5) huruf a PMK 118/2024 s.t.d.d. PMK 71/2026. Berlaku untuk semua baris.</p><ul class="rules">'+SYARAT_UMUM.map(s=>'<li>'+s+'</li>').join('')+'</ul></section>'+
       '<section class="gsec"><h2>Syarat formal permohonan</h2><p class="hint">Petikan Pasal 23 dan 24 pada lampiran huruf H KEP-239/PJ/2026.</p><ul class="rules">'+SYARAT_FORMAL.map(s=>'<li>'+s+'</li>').join('')+'<li>'+SYARAT_KECUALI+'</li></ul></section>'+
