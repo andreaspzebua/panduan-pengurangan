@@ -68,6 +68,10 @@ a{color:var(--accent);text-underline-offset:3px}
 .lede{color:var(--muted);max-width:62ch}
 .today{font:500 12.5px/1.5 var(--font-mono);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;max-width:62ch}
 .today b{font-weight:600;color:var(--accent)}
+.callout{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border:1px solid var(--line-strong);border-radius:10px;padding:10px 12px;margin-bottom:18px;font-size:14px;line-height:1.5}
+.callout svg{flex:none;width:18px;height:18px;margin-top:2px;color:var(--accent)}
+.callout p{min-width:0}
+.callout a{font-weight:600;white-space:nowrap}
 .legend{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-radius:8px;overflow:hidden;margin-top:6px}
 .legend span{font:500 12px/1 var(--font-mono);text-align:center;padding:8px 4px}
 .legcap{font-size:12px;color:var(--muted)}
@@ -256,6 +260,10 @@ a.btn{display:inline-block;text-decoration:none;text-align:center}
 </head>
 <body>
 <div class="wrap">
+  <aside class="callout" role="note" aria-label="Kontak untuk informasi resmi">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>
+    <p><b>Hasil aplikasi ini adalah panduan, bukan keputusan.</b> Untuk informasi lebih lanjut dan akurat, hubungi <a href="tel:1500200">Kring Pajak 1500200</a> atau KPP tempat Wajib Pajak terdaftar.</p>
+  </aside>
   <header class="top">
     <p class="eyebrow">KEP-239/PJ/2026 · PMK 118/2024 s.t.d.d. PMK 71/2026</p>
     <h1>Pemandu Pengurangan Sanksi</h1>
@@ -275,7 +283,7 @@ a.btn{display:inline-block;text-decoration:none;text-align:center}
 
   <main id="view" role="tabpanel" aria-live="polite"></main>
 
-  <footer class="foot">Alat bantu untuk memperkirakan tarif berdasarkan Lampiran KEP-239/PJ/2026 dan Pasal 23 dan 24 PMK 118/2024 s.t.d.d. PMK 71/2026. Hasilnya perkiraan, bukan keputusan. Keputusan ada pada Direktorat Jenderal Pajak. Untuk kasus di luar tabel, tanyakan ke KPP.<br>Disusun oleh Aendreii.</footer>
+  <footer class="foot">Alat bantu untuk memperkirakan tarif berdasarkan Lampiran KEP-239/PJ/2026 dan Pasal 23 dan 24 PMK 118/2024 s.t.d.d. PMK 71/2026. Hasilnya perkiraan, bukan keputusan. Keputusan ada pada Direktorat Jenderal Pajak. Untuk kasus di luar tabel, hubungi Kring Pajak 1500200 atau KPP tempat Wajib Pajak terdaftar.<br>Disusun oleh Aendreii.</footer>
 </div>
 
 <script id="logic">
