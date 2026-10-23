@@ -323,8 +323,8 @@ const OBJEK = {
   periksa:{w:'sesudah',tahap:'t3',t:'SKP atau STP hasil pemeriksaan',d:'SKPKB, SKPKBT, SKP PBB, atau STP yang terbit setelah pemeriksaan.',ref:'Lampiran B · Diktum KESATU huruf d',list:['p13_2','p13_3','p15_2','p17c','p17d','pbb10','p7','p8','p9','p14']},
   tagih_baru:{w:'sesudah',tahap:'t4',t:'STP bunga atau denda penagihan',d:'STP bunga karena SKP atau STP terlambat dilunasi, bunga angsuran atau penundaan, atau denda PBB terlambat bayar.',ref:'Lampiran C · Diktum KESATU huruf f',list:['p19_1','p19_2','p19_3','pbb11']},
   pps:{w:'sesudah',tahap:'t1',t:'SKPKB atau SKPKBT atas harta PPS',d:'Hasil pemeriksaan atas harta yang belum atau kurang diungkap dalam Program Pengungkapan Sukarela. Terbit sampai 31 Des 2027.',ref:'Lampiran D · Diktum KESATU huruf g',list:['pps'],auto:'pps'},
-  spt:{w:'belum',tahap:'t2',t:'SPT Kurang Bayar yang saya sampaikan terlambat, betulkan, atau bayar terlambat',d:'SPT Tahunan PPh sampai Tahun Pajak 2025, atau SPT Masa sampai Masa Pajak September 2026, disampaikan mulai 8 Oktober 2026.',ref:'Lampiran A · Diktum KESATU huruf a sampai c',list:['p7','p8','p9']},
-  baru:{w:'belum',tahap:'t1',t:'Saya baru terdaftar NPWP atau dikukuhkan PKP',d:'Terdaftar atau dikukuhkan 8 Okt 2026 s.d. 30 Jun 2027, lalu menyampaikan SPT lama yang Kurang Bayar.',ref:'Lampiran D · Diktum KESATU huruf a dan c',list:['p7','p9']}
+  spt:{w:'belum',tahap:'t2',t:'SPT yang saya sampaikan terlambat, betulkan, atau pajaknya saya bayar terlambat',d:'SPT Tahunan PPh sampai Tahun Pajak 2025, atau SPT Masa sampai Masa Pajak September 2026, disampaikan mulai 8 Oktober 2026. Untuk denda telat lapor dan bunga pembetulan, SPT-nya berstatus Kurang Bayar.',ref:'Lampiran A · Diktum KESATU huruf a sampai c',list:['p7','p8','p9']},
+  baru:{w:'belum',tahap:'t1',t:'Saya baru terdaftar NPWP atau dikukuhkan PKP',d:'Terdaftar atau dikukuhkan 8 Okt 2026 s.d. 30 Jun 2027, lalu menyampaikan SPT lama. Untuk denda telat lapor, SPT-nya berstatus Kurang Bayar.',ref:'Lampiran D · Diktum KESATU huruf a dan c',list:['p7','p9']}
 };
 const OBJEK_BY_WAKTU = {sesudah:['stp_awas','periksa','tagih_baru','pps'], belum:['spt','baru']};
 
@@ -369,11 +369,17 @@ const SKP_B = 'SKPKB, SKPKBT, atau SKP PBB';
 
 const NOTE_REL = 'Batas "1 bulan" dan "2 bulan" dihitung sampai tanggal yang sama pada bulan berikutnya, seperti contoh kasus lampiran (STP 12 Okt 2026: lunas 12 Des 2026 masih 50%). Jika tarif tertinggi punya dua ketentuan, batasnya adalah yang lebih akhir, dan tarif berikutnya baru berlaku setelah batas itu. Contoh kasus lampiran: SKPKB terbit 12 Okt 2026 dilunasi 13 Nov 2026 masih 100%, dilunasi 2 Jan 2027 langsung 25%.';
 const KB_SKP = 'SKP tidak diajukan keberatan, atau keberatannya dicabut dan disetujui DJP, atau tidak dipertimbangkan (Pasal 23 ayat (2) PMK 118/2024 s.t.d.d. PMK 71/2026)';
+const KB_STP = 'SKP, SKP PBB, atau SPPT terkait tidak diajukan keberatan, atau keberatannya dicabut dan disetujui DJP, atau tidak dipertimbangkan (Pasal 23 ayat (3) huruf d PMK 118/2024 s.t.d.d. PMK 71/2026)';
+const K_SPT_C = 'Pajak terutang dalam SPT Tahunan PPh Tahun Pajak sampai dengan 2025 (berstatus kurang bayar) dan/atau dalam SPT Masa sampai dengan Masa Pajak September 2026';
+const K_SPT_D = 'SPT Tahunan PPh Tahun Pajak 2025 dan sebelumnya dan/atau SPT Masa sampai dengan Masa Pajak September 2026. Untuk denda Pasal 7, SPT berstatus kurang bayar';
+const HINT_P = 'Pembayaran sanksi sebelum 8 Oktober 2026 tidak dihitung. Persentasenya dihitung dari sisa sanksi yang belum dibayar, untuk tiap STP atau kohir.';
+const NOTE_P14 = 'Khusus STP Pasal 14 ayat (4) yang berkaitan dengan SKP: pokok pajak dalam SKP itu harus sudah dilunasi (Pasal 23 ayat (5) huruf a PMK 118/2024 s.t.d.d. PMK 71/2026).';
 const K_SPT = 'SPT Tahunan PPh Tahun Pajak sampai dengan 2025 dan/atau SPT Masa sampai dengan Masa Pajak September 2026, dengan status kurang bayar';
 const K_F = ['STP atau STP PBB diterbitkan dalam periode 8 Oktober 2026 sampai dengan 30 Juni 2027','Pokok pajak, utang pajak, dan/atau sebagian sanksi dibayar sampai dengan 30 Juni 2027'];
 const K_E = ['SKP, SKP PBB, STP, atau STP PBB diterbitkan sebelum 8 Oktober 2026','Pokok pajak, utang pajak, dan/atau sebagian sanksi dibayar sampai dengan 30 Juni 2027'];
 const K_D = ['SKP, SKP PBB, atau STP hasil pemeriksaan diterbitkan dalam periode 8 Oktober 2026 sampai dengan 30 Juni 2027','Pokok pajak terutang dibayar atau disetor sampai dengan 30 Juni 2027'];
 const NOTE_SEBELUM = 'Jika SPT atau pembetulannya sudah disampaikan sebelum 8 Oktober 2026, yang berlaku Lampiran A huruf f: bayar 10% atau 25% dari sanksi setelah STP terbit.';
+const NOTE_P9 = 'Untuk bunga Pasal 9, tarif 90% atau 75% dipakai jika pajak dibayar dan SPT dilaporkan sebelum 8 Oktober 2026. Lampiran KEP berpatokan pada tanggal SPT dilaporkan, sedangkan salindia DJP (slide 14) pada tanggal pelunasan, jadi jika kedua tanggal itu berbeda sisi dari 8 Oktober 2026, konfirmasikan ke Kring Pajak 1500200 atau KPP.';
 /* Denda Pasal 7 ayat (1) dalam STP yang terbit sebelum 8 Okt 2026, sedangkan SPT Kurang Bayarnya baru disampaikan mulai 8 Okt 2026. */
 const NOTES_LAMA7 = [
   'STP denda ini terbit sebelum 8 Oktober 2026, tetapi SPT Kurang Bayarnya disampaikan mulai 8 Oktober 2026, jadi tarifnya mengikuti tanggal penyampaian SPT (Diktum KESATU huruf a). Jangan bayar sanksi dalam STP lebih dulu, karena sanksi yang sudah dibayar tidak dapat dikurangi.',
@@ -389,7 +395,7 @@ const OUT = {
     ask:'Kapan Anda terdaftar (atau dikukuhkan PKP) dan menyampaikan SPT?',
     hint:'Jika tanggal terdaftar dan tanggal penyampaian SPT jatuh di periode berbeda, pilih periode yang lebih akhir.',
     none:'Terdaftar atau SPT disampaikan setelah 30 Juni 2027',
-    kondisi:['Wajib Pajak baru terdaftar atau Pengusaha Kena Pajak baru dikukuhkan dalam periode 8 Oktober 2026 sampai dengan 30 Juni 2027',K_SPT],
+    kondisi:['Wajib Pajak baru terdaftar atau Pengusaha Kena Pajak baru dikukuhkan dalam periode 8 Oktober 2026 sampai dengan 30 Juni 2027',K_SPT_D],
     syarat:['Menyampaikan SPT untuk Tahun Pajak 2025 dan sebelumnya dan/atau untuk Masa Pajak sampai dengan Masa Pajak September 2026.'],
     scope:[['a','p7'],['c','p9']],
     tiers:CAL3(p=>'Untuk Wajib Pajak yang baru terdaftar atau Pengusaha Kena Pajak yang baru dikukuhkan dalam periode '+p+' dan Wajib Pajak atau Pengusaha Kena Pajak dimaksud menyampaikan Surat Pemberitahuan untuk Tahun Pajak 2025 dan sebelumnya dan/atau untuk Masa Pajak sampai dengan Masa Pajak September 2026.', p=>'Terdaftar atau dikukuhkan, dan SPT disampaikan, dalam periode '+p),
@@ -435,11 +441,11 @@ const OUT = {
     ask:'Kapan SPT disampaikan?',
     hint:'Tarif ditentukan oleh tanggal penyampaian SPT. Pajaknya juga harus dibayar atau disetor pada 8 Okt 2026 s.d. 30 Jun 2027.',
     none:'SPT disampaikan setelah 30 Juni 2027, atau pajaknya tidak dibayar dalam periode kebijakan',
-    kondisi:[K_SPT,'SPT disampaikan dan pajaknya dibayar atau disetor dalam periode 8 Oktober 2026 sampai dengan 30 Juni 2027'],
-    syarat:['Penyampaian Surat Pemberitahuan dilakukan dalam periode tarif yang bersangkutan.'],
+    kondisi:[K_SPT_C,'SPT disampaikan dan pajaknya dibayar atau disetor dalam periode 8 Oktober 2026 sampai dengan 30 Juni 2027'],
+    syarat:['Penyampaian Surat Pemberitahuan dilakukan dalam periode tarif yang bersangkutan.','Pokok pajak dibayar atau disetor mulai 8 Oktober 2026, paling lambat 30 Juni 2027.'],
     scope:[['c','p9']],
     tiers:CAL3(p=>'Penyampaian Surat Pemberitahuan dilakukan dalam periode '+p+'.'),
-    notes:[NOTE_SEBELUM,NOTE_BARU]
+    notes:['Jika pajak dibayar dan SPT dilaporkan sebelum 8 Oktober 2026, yang berlaku Lampiran A huruf f: bayar 10% atau 25% dari sanksi setelah STP terbit. Jika salah satunya sebelum dan yang lain sesudah 8 Oktober 2026, konfirmasikan ke Kring Pajak 1500200 atau KPP.',NOTE_BARU]
   },
   b2d:{
     tahap:'t2', name:'Pengawasan: STP Pasal 14 ayat (3)', ref:'Lampiran A · Diktum KESATU huruf f', mode:'rel', kind:'pokok', docName:'STP', verb:'pokok pajak dilunasi',
@@ -454,17 +460,17 @@ const OUT = {
     notes:['Contoh kasus lampiran: STP terbit 12 Okt 2026 atas angsuran PPh Pasal 25. Pokok dilunasi 1 Nov 2026 mendapat 100%, 12 Des 2026 mendapat 50%, 12 Jan 2027 mendapat 25%.',NOTE_REL]
   },
   b2e:{
-    tahap:'t2', name:'Pengawasan: STP atas SPT yang disampaikan sebelum 8 Okt 2026', ref:'Lampiran A · Diktum KESATU huruf f', mode:'rel', kind:'sebagian', docName:'STP', verb:'sebagian sanksi dibayar',
+    tahap:'t2', name:'Pengawasan: STP, bayar sebagian sanksi', ref:'Lampiran A · Diktum KESATU huruf f', mode:'rel', kind:'sebagian', docName:'STP', verb:'sebagian sanksi dibayar',
     terbitWin:TW, kondisi:K_F,
-    syarat:['Wajib Pajak telah menyampaikan Surat Pemberitahuan dan/atau pembetulan Surat Pemberitahuan yang dilakukan sebelum tanggal 8 Oktober 2026.','Membayar sebagian sanksi administratif.'],
+    syarat:['Denda Pasal 7 dan bunga Pasal 8: Surat Pemberitahuan dan/atau pembetulan Surat Pemberitahuan disampaikan sebelum tanggal 8 Oktober 2026.','Bunga Pasal 9: pajak dibayar dan SPT dilaporkan sebelum tanggal 8 Oktober 2026.','Membayar sebagian sanksi administratif.'],
     scope:[['f','p7'],['f','p8'],['f','p9']],
     tiers:REL9075(L90_BAYAR,{abs:[START,Y26]}),
-    notes:['Contoh kasus lampiran: SPT disampaikan 30 Agt 2026 dan STP terbit 12 Okt 2026. Bayar 10% pada 12 Nov atau 12 Des 2026 mendapat 90%. Bayar 25% pada 1 Jan atau 30 Jun 2027 mendapat 75%.',NOTE_REL]
+    notes:['Contoh kasus lampiran: SPT disampaikan 30 Agt 2026 dan STP terbit 12 Okt 2026. Bayar 10% pada 12 Nov atau 12 Des 2026 mendapat 90%. Bayar 25% pada 1 Jan atau 30 Jun 2027 mendapat 75%.',NOTE_P9,NOTE_REL]
   },
   b2h:{
     tahap:'t2', name:'Pengawasan: STP denda faktur pajak', ref:'Lampiran A · Diktum KESATU huruf f', mode:'rel', kind:'sebagian', docName:'STP', verb:'sebagian sanksi dibayar',
     terbitWin:TW, kondisi:K_F,
-    syarat:['Membayar sebagian sanksi administratif.'],
+    syarat:['Membayar sebagian sanksi administratif.','Jika STP berkaitan dengan SKP, pokok pajak dalam SKP itu sudah dilunasi (Pasal 23 ayat (5) huruf a).'],
     scope:[['f','p14']],
     tiers:REL9075(L90_BAYAR,{abs:[START,Y26]}),
     notes:['Contoh kasus lampiran: STP terbit 4 Jun 2027 dan 10% dibayar 30 Jun 2027 mendapat 90%. STP terbit 12 Okt 2026: bayar 10% pada 31 Des 2026 mendapat 90%, bayar 25% pada 31 Mar atau 30 Jun 2027 mendapat 75%.',NOTE_REL]
@@ -496,12 +502,12 @@ const OUT = {
     syarat:['Membayar sebagian sanksi administratif.'],
     scope:[['d','p7'],['d','p8'],['d','p9'],['d','p14']],
     tiers:REL9075(L90_TERBIT,ABS1),
-    notes:['Contoh kasus lampiran: STP denda faktur terbit 1 Jun 2027 dan 10% dibayar 30 Jun 2027 mendapat 90%.',NOTE_REL]
+    notes:['Contoh kasus lampiran: STP denda faktur terbit 1 Jun 2027 dan 10% dibayar 30 Jun 2027 mendapat 90%.',NOTE_P14,NOTE_REL]
   },
   s19a:{
     tahap:'t4', name:'Penagihan: STP lama Pasal 19 ayat (1) atau denda PBB, lunasi pokok', ref:'Lampiran C · Diktum KESATU huruf e', mode:'win', kind:'pokok',
     ask:'Kapan pokok pajak dilunasi?', none:NONE_L,
-    kondisi:K_E.concat(['SKP, SKP PBB, atau SPPT terkait tidak diajukan keberatan']),
+    kondisi:K_E.concat([KB_STP]),
     syarat:['Melunasi pokok pajak.'],
     scope:[['e','p19_1'],['e','pbb11']],
     tiers:CAL3(p=>'Pelunasan pokok pajak dalam periode '+p+', atas surat tagihan pajak atau surat tagihan pajak Pajak Bumi dan Bangunan yang diterbitkan sebelum tanggal 8 Oktober 2026.'),
@@ -518,25 +524,16 @@ const OUT = {
   },
   s19c:{
     tahap:'t4', name:'Penagihan: STP lama, bayar sebagian sanksi', ref:'Lampiran C · Diktum KESATU huruf e', mode:'win', kind:'sebagian',
-    ask:ASK_P, none:NONE_P,
+    ask:ASK_P, none:NONE_P, hint:HINT_P,
     syarat:['Membayar sebagian dari sanksi administratif.'],
     kondisi:K_E.concat(['SKP terkait, jika ada, tidak diajukan keberatan, atau keberatannya dicabut dan disetujui DJP, atau tidak dipertimbangkan']),
     scope:[['e','p7'],['e','p8'],['e','p9'],['e','p14']],
     tiers:CALP((x,p)=>'Wajib Pajak telah membayar sanksi administratif tersebut sebesar '+x+', dengan pembayaran dilakukan dalam periode '+p+', atas surat tagihan pajak yang diterbitkan sebelum tanggal 8 Oktober 2026.'),
-    notes:['Tidak mengajukan gugatan dan/atau upaya hukum lain atas STP ini, atau jika pernah mengajukan, sudah dicabut (Diktum KEEMPAT huruf a dan b). Jika STP berkaitan dengan SKP, SKP itu tidak diajukan keberatan, atau keberatannya dicabut dan disetujui DJP, atau tidak dipertimbangkan (Pasal 23 ayat (3) huruf d PMK 118/2024 s.t.d.d. PMK 71/2026).','Khusus denda Pasal 7 ayat (1): jika SPT Kurang Bayarnya baru disampaikan pada 8 Okt 2026 s.d. 30 Jun 2027, tarifnya 100%, 50%, atau 25% menurut tanggal penyampaian SPT (Diktum KESATU huruf a), tanpa membayar sebagian sanksi. Pilih jawaban itu pada pertanyaan "SPT".','Contoh kasus lampiran: STP denda faktur terbit 1 Jan 2026. Bayar 10% pada 31 Des 2026 mendapat 90%, bayar 25% pada 31 Mar atau 30 Jun 2027 mendapat 75%.']
-  },
-  s20:{
-    tahap:'t4', name:'Penagihan: keberatan, lunasi utang pajak', ref:'Lampiran C · Diktum KESATU huruf e', mode:'win', kind:'utang',
-    ask:'Kapan utang pajak dilunasi?', none:NONE_L,
-    kondisi:K_E.concat(['SKP terkait diajukan keberatan']),
-    syarat:['Melunasi utang pajak.'],
-    scope:[['e','p19_1'],['e','p19_2'],['e','p19_3']],
-    tiers:CAL3(p=>'Wajib Pajak telah melunasi utang pajak dalam periode '+p+', atas surat tagihan pajak yang diterbitkan sebelum tanggal 8 Oktober 2026.'),
-    notes:['Utang pajak adalah jumlah yang harus dibayar menurut ketetapan, termasuk sanksinya. Contoh kasus lampiran: SKPKB Rp120 juta (pokok Rp100 juta dan sanksi Rp20 juta) yang keberatannya diputus tetap, harus dilunasi Rp120 juta.']
+    notes:['Tidak mengajukan gugatan dan/atau upaya hukum lain atas STP ini, atau jika pernah mengajukan, sudah dicabut (Diktum KEEMPAT huruf a dan b). Jika STP berkaitan dengan SKP, SKP itu tidak diajukan keberatan, atau keberatannya dicabut dan disetujui DJP, atau tidak dipertimbangkan (Pasal 23 ayat (3) huruf d PMK 118/2024 s.t.d.d. PMK 71/2026).','Khusus denda Pasal 7 ayat (1): jika SPT Kurang Bayarnya baru disampaikan pada 8 Okt 2026 s.d. 30 Jun 2027, tarifnya 100%, 50%, atau 25% menurut tanggal penyampaian SPT (Diktum KESATU huruf a), tanpa membayar sebagian sanksi. Pilih jawaban itu pada pertanyaan "SPT".','Contoh kasus lampiran: STP denda faktur terbit 1 Jan 2026. Bayar 10% pada 31 Des 2026 mendapat 90%, bayar 25% pada 31 Mar atau 30 Jun 2027 mendapat 75%.',NOTE_P14]
   },
   s21a:{
     tahap:'t4', name:'Penagihan: SKP lama, pokok sudah lunas', ref:'Lampiran C · Diktum KESATU huruf e', mode:'win', kind:'sebagian',
-    ask:ASK_P, none:NONE_P,
+    ask:ASK_P, none:NONE_P, hint:HINT_P,
     kondisi:K_E.concat([KB_SKP]),
     syarat:['Wajib Pajak telah melunasi pokok pajak sebelum tanggal 8 Oktober 2026.','Membayar sebagian sanksi administratif.'],
     scope:[['e','p13_2'],['e','p13_3'],['e','p15_2'],['e','p17c'],['e','p17d'],['e','pbb10']],
@@ -545,50 +542,44 @@ const OUT = {
   },
   s21c:{
     tahap:'t4', name:'Penagihan: STP lama bunga atau denda, pokok sudah lunas', ref:'Lampiran C · Diktum KESATU huruf e', mode:'win', kind:'sebagian',
-    ask:ASK_P, none:NONE_P,
-    kondisi:K_E.concat(['SKP, SKP PBB, atau SPPT terkait tidak diajukan keberatan']),
+    ask:ASK_P, none:NONE_P, hint:HINT_P,
+    kondisi:K_E.concat([KB_STP]),
     syarat:['Wajib Pajak telah melunasi pokok pajak sebelum tanggal 8 Oktober 2026.','Membayar sebagian sanksi administratif.'],
     scope:[['e','p19_1'],['e','p19_2'],['e','p19_3'],['e','pbb11']],
     tiers:CALP((x,p)=>'Wajib Pajak telah melunasi pokok pajak sebelum tanggal 8 Oktober 2026 dan telah membayar sanksi administratif dimaksud sebesar '+x+', yang pembayarannya dilakukan dalam periode '+p+', atas surat tagihan pajak atau surat tagihan pajak Pajak Bumi dan Bangunan yang diterbitkan sebelum tanggal 8 Oktober 2026.'),
     notes:['Contoh kasus lampiran: STP Pasal 19 ayat (1) terbit 8 Agt 2026 dan pokok SKPKB sudah dilunasi 7 Jul 2026. Bayar 10% pada 31 Des 2026 mendapat 90%, bayar 25% pada 30 Jun 2027 mendapat 75%.']
   },
-  s21b:{
-    tahap:'t4', name:'Penagihan: keberatan, utang pajak sudah lunas', ref:'Lampiran C · Diktum KESATU huruf e', mode:'win', kind:'sebagian',
-    ask:ASK_P, none:NONE_P,
-    kondisi:K_E.concat(['SKP terkait diajukan keberatan']),
-    syarat:['Wajib Pajak telah melunasi utang pajak sebelum tanggal 8 Oktober 2026.','Membayar sebagian sanksi administratif.'],
-    scope:[['e','p19_1'],['e','p19_2'],['e','p19_3']],
-    tiers:CALP((x,p)=>'Wajib Pajak telah melunasi utang pajak sebelum tanggal 8 Oktober 2026 dan telah membayar sanksi administratif dimaksud sebesar '+x+', yang pembayarannya dilakukan dalam periode '+p+', atas surat tagihan pajak yang diterbitkan sebelum tanggal 8 Oktober 2026.'),
-    notes:[]
-  },
   s22a:{
     tahap:'t4', name:'Penagihan: STP baru, belum lunas', ref:'Lampiran C · Diktum KESATU huruf f', mode:'win',
-    kind:a=>a.keberatan==='ya'?'utang':'pokok',
-    ask:a=>a.keberatan==='ya'?'Kapan utang pajak dilunasi?':'Kapan pokok pajak dilunasi?', none:NONE_L,
-    kondisi:K_F,
-    syarat:['Melunasi utang pajak, dalam hal surat ketetapan pajak diajukan keberatan; atau pokok pajak, dalam hal surat ketetapan pajak atau SKP PBB tidak diajukan keberatan.'],
+    kind:'pokok',
+    ask:'Kapan pokok pajak dilunasi?', none:NONE_L,
+    kondisi:K_F.concat([KB_STP]),
+    syarat:['Melunasi pokok pajak.'],
     scope:[['f','p19_1'],['f','p19_2'],['f','pbb11']],
     tiers:CAL3(p=>'Wajib Pajak telah melunasi utang pajak (dalam hal surat ketetapan pajak diajukan keberatan) atau pokok pajak (dalam hal surat ketetapan pajak atau SKP PBB tidak diajukan keberatan) dalam periode '+p+', atas surat tagihan pajak atau surat tagihan pajak Pajak Bumi dan Bangunan yang diterbitkan dalam periode tanggal 8 Oktober 2026 sampai dengan tanggal 30 Juni 2027.'),
     notes:['Contoh kasus lampiran: STP Pasal 19 ayat (1) terbit 12 Okt 2026. Pokok dilunasi 31 Okt atau 20 Des 2026 mendapat 100%, 5 Jan 2027 mendapat 50%, 2 Apr atau 30 Jun 2027 mendapat 25%.']
   },
   s22b:{
     tahap:'t4', name:'Penagihan: STP baru, sudah lunas sebelum 8 Okt 2026', ref:'Lampiran C · Diktum KESATU huruf f', mode:'rel', kind:'sebagian', docName:'STP', verb:'sebagian sanksi dibayar',
-    terbitWin:TW, kondisi:K_F,
-    syarat:['Telah melunasi utang pajak (dalam hal surat ketetapan pajak diajukan keberatan) atau pokok pajak (dalam hal tidak diajukan keberatan) sebelum tanggal 8 Oktober 2026.','Membayar sebagian sanksi administratif.'],
+    terbitWin:TW, kondisi:K_F.concat([KB_STP]),
+    syarat:['Telah melunasi pokok pajak sebelum tanggal 8 Oktober 2026.','Membayar sebagian sanksi administratif.'],
     scope:[['f','p19_1'],['f','p19_2'],['f','p19_3'],['f','pbb11']],
     tiers:REL9075(L90_TERBIT,ABS1),
-    notes:['Contoh kasus lampiran: STP Pasal 19 ayat (1) terbit 16 Des 2026 dan utang pajak sudah lunas 15 Sep 2026. Bayar 10% pada 31 Des 2026 atau 16 Jan 2027 mendapat 90%. Bayar 25% pada 17 Jan atau 30 Jun 2027 mendapat 75%.',NOTE_REL]
+    notes:['Contoh hitungan tanggal dari lampiran: STP Pasal 19 ayat (1) terbit 16 Des 2026, pajaknya sudah lunas sebelum 8 Okt 2026. Bayar 10% pada 31 Des 2026 atau 16 Jan 2027 mendapat 90%. Bayar 25% pada 17 Jan atau 30 Jun 2027 mendapat 75%.',NOTE_REL]
   }
 };
 
 const WHY = {
   lain:'Sanksi ini tidak ada di tabel Lampiran C untuk SKP atau STP yang terbit sebelum 8 Oktober 2026, misalnya sanksi Pasal 14 ayat (3) UU KUP. Untuk SKP atas harta PPS yang terbit sebelum 8 Oktober 2026, sanksinya berdasarkan Pasal 13 ayat (2) atau Pasal 15 ayat (2), jadi pilih sanksi itu di kelompok SKP. '+SYARAT_KECUALI,
   kbSKP:'Sanksi dalam SKP hanya dapat dimohonkan pengurangan jika SKP tidak diajukan keberatan, atau keberatannya dicabut dan disetujui DJP, atau tidak dipertimbangkan (Pasal 23 ayat (2) PMK 118/2024 s.t.d.d. PMK 71/2026). Contoh kasus lampiran KEP juga menyebut sanksi Pasal 13 ayat (2) dalam SKPKB yang diajukan keberatan tidak dapat dimohonkan.',
+  p9lain:'Kondisi ini di luar pilihan yang tersedia. Konfirmasi kembali ke Kring Pajak 1500200 atau KPP tempat Wajib Pajak terdaftar.',
+  kbSTP:'STP bunga penagihan hanya dapat dimohonkan jika SKP yang menjadi dasar tagihannya tidak diajukan keberatan, atau keberatannya dicabut dan disetujui DJP, atau tidak dipertimbangkan (Pasal 23 ayat (3) huruf d PMK 118/2024 s.t.d.d. PMK 71/2026).',
   pbbKb:'Pada tabel Lampiran C, syarat untuk keberatan hanya menyebut pelunasan utang pajak atas "surat ketetapan pajak", sedangkan SKP PBB hanya disebut untuk yang tidak diajukan keberatan. Contoh kasus lampiran KEP (huruf E angka 3 huruf b, contoh 3) juga menyatakan: jika SKP PBB diajukan keberatan, STP denda Pasal 11 ayat (3) UU PBB diterbitkan berdasarkan keputusan keberatan dan Wajib Pajak tidak dapat menyampaikan permohonan pengurangan denda tersebut.',
   p19tl:'Untuk STP yang terbit sebelum 8 Oktober 2026 dan tidak diajukan keberatan, tarif 100%, 50%, dan 25% (pelunasan pokok) hanya untuk Pasal 19 ayat (1) dan denda PBB Pasal 11 ayat (3). Bunga Pasal 19 ayat (2) dan (3) mendapat 90% atau 75% hanya jika pokok pajak sudah dilunasi sebelum 8 Oktober 2026.'
 };
 const WHY_FIX = {
   kbSKP:'Jika keberatannya sudah dicabut dan disetujui DJP, atau tidak dipertimbangkan, ubah jawaban keberatan untuk melihat tarifnya.',
+  kbSTP:'Jika keberatannya sudah dicabut dan disetujui DJP, atau tidak dipertimbangkan, ubah jawaban keberatan untuk melihat tarifnya.',
   p19tl:'Jika pokok pajak ternyata sudah lunas sebelum 8 Oktober 2026, ubah jawaban pelunasan.'
 };
 
@@ -619,7 +610,13 @@ function route(a){
   const sptOut = {p7:'b2a',p8:'b2b',p9:'b2c'};
   switch(ob){
     case 'baru': return {out:'b1a'};
-    case 'spt': return {out:sptOut[s]};
+    case 'spt':
+      if(s==='p9'){
+        if(!a.lapor) return {q:'lapor'};
+        if(a.lapor==='lain') return {out:'tt',why:'p9lain'};
+        return a.lapor==='sebelum' ? {out:'b2e'} : {out:'b2c'};
+      }
+      return {out:sptOut[s]};
     case 'pps':
       if(!a.keberatan) return {q:'keberatan'};
       return kb ? {out:'tt',why:'kbSKP'} : {out:'b1c'};
@@ -628,6 +625,7 @@ function route(a){
       if(s==='p14') return {out:'b2h'};
       if(s==='p19_2'||s==='p19_3') return {out:'b2i'};
       if(!a.lapor) return {q:'lapor'};
+      if(s==='p9' && a.lapor==='lain') return {out:'tt',why:'p9lain'};
       return a.lapor==='sebelum' ? {out:'b2e'} : {out:sptOut[s]};
     case 'periksa':
       if(g==='B') return {out:'s18b'};
@@ -636,6 +634,7 @@ function route(a){
     case 'tagih_baru':
       if(!a.keberatan) return {q:'keberatan'};
       if(s==='pbb11' && kb) return {out:'tt',why:'pbbKb'};
+      if(kb) return {out:'tt',why:'kbSTP'};
       if(!a.lunas) return {q:'lunas'};
       if(a.lunas==='sudah') return {out:'s22b'};
       return s==='p19_3' ? {out:'b2i'} : {out:'s22a'};
@@ -654,12 +653,10 @@ function route(a){
         return a.lunas==='belum' ? {out:'s19b'} : {out:'s21a'};
       }
       if(s==='pbb11' && kb) return {out:'tt',why:'pbbKb'};
+      if(kb) return {out:'tt',why:'kbSTP'};
       if(!a.lunas) return {q:'lunas'};
-      if(a.lunas==='belum'){
-        if(kb) return {out:'s20'};
-        return (s==='p19_1'||s==='pbb11') ? {out:'s19a'} : {out:'tt',why:'p19tl'};
-      }
-      return kb ? {out:'s21b'} : {out:'s21c'};
+      if(a.lunas==='belum') return (s==='p19_1'||s==='pbb11') ? {out:'s19a'} : {out:'tt',why:'p19tl'};
+      return {out:'s21c'};
   }
   return {q:'objek'};
 }
@@ -802,6 +799,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     return ob==='pps' || (s && SANKSI[s] && SANKSI[s].g==='A');
   }
 
+  const CICIL = 'Jika sebagian dibayar sebelum 8 Oktober 2026 dan sisanya dilunasi mulai 8 Oktober 2026, pilih "Belum lunas pada 8 Oktober 2026", karena pelunasannya terjadi dalam periode kebijakan.';
   function qDef(id){
     const a = st.a, ob = objekOf(a);
     if(id==='syarat') return {h:'Bisakah syarat umum ini dipenuhi?', hint:'Diktum KETIGA dan KEEMPAT KEP-239/PJ/2026 serta Pasal 23 PMK 118/2024 s.t.d.d. PMK 71/2026. Berlaku untuk semua baris. Tarifnya tetap bisa dilihat lebih dulu.', rules:SYARAT_UMUM,
@@ -811,7 +809,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
       opts:[
         {v:'sebelum',t:'Sebelum 8 Oktober 2026',d:'Semua SKP atau STP yang terbit sebelum tanggal itu, apa pun asalnya: pembetulan SPT, pengawasan, pemeriksaan, atau penagihan.',s:'Penagihan · Lampiran C · Diktum KESATU huruf e'},
         {v:'sesudah',t:'Pada atau setelah 8 Oktober 2026',d:'Terbit 8 Okt 2026 s.d. 30 Jun 2027. Khusus SKP atas harta PPS, sampai 31 Des 2027.',s:'Lampiran A, B, C, atau D · Diktum KESATU huruf d, f, atau g'},
-        {v:'belum',t:'Belum ada SKP atau STP',d:'Anda baru akan atau sedang menyampaikan SPT yang terlambat, membetulkan SPT, atau membayar pajak yang terlambat.',s:'Lampiran A atau D · Diktum KESATU huruf a sampai c'}
+        {v:'belum',t:'Belum ada SKP atau STP',d:'Anda baru akan atau sedang menyampaikan SPT yang terlambat, membetulkan SPT, atau membayar pajak yang terlambat. Permohonan pengurangan baru dapat diajukan setelah STP atas sanksinya terbit.',s:'Lampiran A atau D · Diktum KESATU huruf a sampai c'}
       ],
       extra:helpBox('Tidak yakin memilih?',[
         'Tanggal terbit tercantum pada SKP atau STP, biasanya di bagian atas surat.',
@@ -841,6 +839,15 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
         {v:'kb',t:'Belum dilaporkan sebelum 8 Oktober 2026, dan ada kurang bayar',d:'Tarif mengikuti tanggal SPT dilaporkan: 8 Okt–31 Des 2026 dapat 100%, Jan–Mar 2027 dapat 50%, Apr–Jun 2027 dapat 25%. Lunasi kurang bayarnya dulu, lalu laporkan SPT. Sanksi di STP tidak perlu dibayar.',s:'Lampiran A · Diktum KESATU huruf a'},
         {v:'lain',t:'Sudah dilaporkan sebelum 8 Oktober 2026, atau tidak ada kurang bayar',d:'Termasuk SPT Kurang Bayar yang sudah dilaporkan sebelum 8 Oktober 2026. Bayar 10% dari sanksi untuk tarif 90%, atau 25% untuk tarif 75%.',s:'Lampiran C · Diktum KESATU huruf e'}
       ]};
+    if(id==='lapor' && a.sanksi==='p9'){
+      const blm = a.waktu==='belum';
+      return {h:'Kapan pajaknya dibayar dan SPT-nya dilaporkan?', hint:'Untuk bunga Pasal 9, tanggal pembayaran pajak dan tanggal pelaporan SPT sama-sama menentukan.',
+        opts:[
+          {v:'sebelum',t:'Keduanya sebelum 8 Oktober 2026',d:blm?'Setelah STP bunga terbit, bayar 10% atau 25% dari sanksinya.':'Bayar 10% atau 25% dari sanksi dalam STP.',s:'Lampiran A huruf f · tarif 90% atau 75%'},
+          {v:'sesudah',t:'Keduanya pada atau setelah 8 Oktober 2026'+(blm?', atau belum dilakukan':''),d:'Tarif mengikuti tanggal SPT dilaporkan.',s:'Lampiran A huruf c · tarif 100%, 50%, atau 25%'},
+          {v:'lain',t:'Di luar pilihan di atas',d:'Konfirmasi kembali ke Kring Pajak 1500200 atau KPP tempat Wajib Pajak terdaftar.'}
+        ]};
+    }
     if(id==='lapor') return {h:'Kapan SPT atau pembetulan SPT yang menjadi dasar STP ini disampaikan?', hint:'Lampiran A KEP-239 membedakan tarif berdasarkan tanggal penyampaian SPT atau pembetulannya.',
       opts:[
         {v:'sebelum',t:'Sebelum 8 Oktober 2026',s:'Lampiran A huruf f · bayar 10% atau 25% dari sanksi'},
@@ -850,20 +857,20 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
       if(sanksiCtxSKP(a)) return {h:'Apakah SKP ini diajukan keberatan?', hint:'Sanksi dalam SKP hanya dapat dimohonkan jika SKP tidak diajukan keberatan, atau keberatannya dicabut dan disetujui DJP, atau tidak dipertimbangkan (Pasal 23 ayat (2)).',
         opts:[{v:'tidak',t:'Tidak diajukan keberatan'},{v:'cabut',t:'Keberatan dicabut dan disetujui DJP, atau tidak dipertimbangkan'},{v:'ya',t:'Diajukan keberatan, masih diproses atau sudah diputus'}]};
       const pbb = a.sanksi==='pbb11';
-      return {h:'Apakah '+(pbb?'SPPT atau SKP PBB':'SKP')+' yang menjadi dasar tagihan ini diajukan keberatan?', hint:'Yang ditanyakan adalah keberatan atas '+(pbb?'SPPT atau SKP PBB':'SKP')+' asal tagihan, bukan atas STP ini, karena STP tidak dapat diajukan keberatan. Jawaban ini menentukan apakah yang harus dilunasi pokok pajak atau utang pajak.',
-        opts:[{v:'tidak',t:'Tidak diajukan keberatan'},{v:'ya',t:'Diajukan keberatan dan sudah ada keputusan keberatan',d:pbb?'Untuk denda PBB, contoh kasus lampiran menyatakan tidak dapat dimohonkan.':'Contoh kasus lampiran: keberatan diputus tetap, STP bunga Pasal 19 ayat (1) tetap dapat dimohonkan dengan melunasi utang pajak.'}],
-        extra:helpBox('Keberatan dicabut, atau keberatan atau banding masih berjalan?',['Tabel lampiran hanya membedakan diajukan dan tidak diajukan keberatan. Untuk keadaan ini, konfirmasikan ke KPP sebelum mengajukan permohonan.'])};
+      const X = pbb?'SPPT atau SKP PBB':'SKP';
+      return {h:'Apakah '+X+' yang menjadi dasar tagihan ini diajukan keberatan?', hint:'Yang ditanyakan adalah keberatan atas '+X+' asal tagihan, bukan atas STP ini, karena STP tidak dapat diajukan keberatan. STP hanya dapat dimohonkan jika '+X+' itu tidak diajukan keberatan, atau keberatannya dicabut dan disetujui DJP, atau tidak dipertimbangkan (Pasal 23 ayat (3) huruf d).',
+        opts:[{v:'tidak',t:'Tidak diajukan keberatan'},{v:'cabut',t:'Keberatan dicabut dan disetujui DJP, atau tidak dipertimbangkan'},{v:'ya',t:'Diajukan keberatan, masih diproses atau sudah diputus'}]};
     }
     if(id==='lunas'){
       const g = SANKSI[a.sanksi].g, kb = a.keberatan==='ya';
       let h, hint, sB, sS;
       if(g==='A'){
-        h='Apakah pokok pajak dalam SKP ini sudah dilunasi sebelum 8 Oktober 2026?'; hint='Pokok pajak adalah pajak yang kurang dibayar dalam SKP, di luar sanksi.';
+        h='Apakah pokok pajak dalam SKP ini sudah dilunasi sebelum 8 Oktober 2026?'; hint='Pokok pajak adalah pajak yang kurang dibayar dalam SKP, di luar sanksi. '+CICIL;
         sB='Lunasi pokok dalam periode · tarif 100%, 50%, atau 25%'; sS='Bayar sebagian sanksi · tarif 90% atau 75%';
       } else {
         const what = kb ? 'utang pajak' : 'pokok pajak';
         h='Apakah '+what+' sudah dilunasi sebelum 8 Oktober 2026?';
-        hint = kb ? 'Karena diajukan keberatan, yang dinilai adalah pelunasan utang pajak, yaitu jumlah menurut ketetapan termasuk sanksinya.' : 'Karena tidak diajukan keberatan, yang dinilai adalah pelunasan pokok pajak.';
+        hint = 'Yang dinilai adalah pelunasan pokok pajak. '+CICIL;
         sB='Lunasi '+what+' dalam periode · tarif 100%, 50%, atau 25%'; sS='Bayar sebagian sanksi · tarif 90% atau 75%';
       }
       return {h:h, hint:hint, opts:[{v:'belum',t:'Belum lunas pada 8 Oktober 2026',s:sB},{v:'sudah',t:'Sudah lunas sebelum 8 Oktober 2026',s:sS}]};
@@ -893,6 +900,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     const d = qDef(k); const o = d && d.opts.find(x=>x.v===v); return o ? o.t : v;
   }
 
+  const klabel = k => k==='lapor' && st.a.sanksi==='p9' ? 'Bayar dan lapor' : KLABEL[k];
   function trailHTML(){
     const ob = objekOf(st.a);
     const rows = ORDER.filter(k=>st.a[k]).map(k=>{
@@ -901,7 +909,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
       let extra = '';
       if(k==='waktu' && st.a.waktu==='sebelum' && st.a.spt7!=='kb') extra = '<small>Penagihan · Lampiran C · Diktum KESATU huruf e</small>';
       const auto = k==='sanksi' && ob && OBJEK[ob] && OBJEK[ob].auto;
-      return '<div class="trow"><span class="k">'+KLABEL[k]+'</span><span class="v">'+v+extra+'</span>'+(auto?'<span></span>':'<button class="link" data-edit="'+k+'">Ubah</button>')+'</div>';
+      return '<div class="trow"><span class="k">'+klabel(k)+'</span><span class="v">'+v+extra+'</span>'+(auto?'<span></span>':'<button class="link" data-edit="'+k+'">Ubah</button>')+'</div>';
     }).join('');
     return rows ? '<div class="trail">'+rows+'</div>' : '';
   }
@@ -947,6 +955,8 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     const vT = st.a.tglT||st.keepT||'', vB = st.a.tglB||st.keepB||'';
     return '<section class="qcard" tabindex="-1"><h2>Kapan '+o.docName+' terbit, dan kapan '+o.verb+'?</h2>'+
       '<p class="hint">Lampiran memakai hitungan bulan sejak tanggal terbit, jadi isi kedua tanggal. Belum membayar? Isi tanggal rencana bayar untuk melihat tarifnya.'+
+      (st.a.waktu==='belum' ? ' STP belum terbit? Isi perkiraan tanggal terbitnya. Permohonan diajukan setelah STP terbit.' : '')+
+      (o.kind==='sebagian' ? ' '+HINT_P : '')+
       (o.tiers.some(t=>t.lines.length>1) ? ' Untuk '+o.docName+' yang terbit 8 Okt s.d. 31 Des 2026, batas tarif tertinggi adalah 31 Des 2026 atau 1 bulan setelah terbit, mana yang lebih akhir. Contoh: terbit 9 Okt 2026, batasnya 31 Des 2026; terbit 10 Des 2026, batasnya 10 Jan 2027.' : '')+'</p>'+
       '<p class="eyebrow">Persyaratan menurut lampiran</p>'+tiersHTML(o,0,-1,null,null)+
       '<div class="fields"><div class="field"><label for="tgT">Tanggal '+o.docName+' terbit</label><input id="tgT" type="date" value="'+vT+'"></div>'+
@@ -1017,9 +1027,10 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
   const AJU_PATH = ['Layanan Wajib Pajak','Layanan Administrasi','Buat Permohonan Layanan Administrasi','AS.26-03 Keberatan Non Keberatan','AS.26-03 LA.26-03 Permohonan Pengurangan atau Penghapusan Sanksi Administratif (Pasal 36 ayat (1) huruf a UU KUP)'];
   const AJU_LAMP = ['Alasan penghapusan sanksi.','Surat pernyataan sesuai KEP-239/PJ/2026 (lampiran F dan G).','Bukti pelunasan pokok pajak, dalam hal terdapat pokok dalam STP, atau bukti pembayaran sebagian sanksi administratif.','Surat permohonan pencabutan gugatan atau upaya hukum lain, jika sebelumnya pernah diajukan (Diktum KEEMPAT huruf b).'];
   const ajuLead = () => 'Sampaikan permohonan paling lambat 1 Oktober 2028 ('+dueText(D(PERMOHONAN))+') ke KPP tempat Wajib Pajak terdaftar, atau melalui Coretax menu:';
-  const ajuText = () => ajuLead()+'\n   '+AJU_PATH.join(' > ')+'\n   Panduan langkah penginputan di Coretax (PDF) dan aturan terkait: '+TEMPLATE_URL+'\n   Sertakan atau unggah:\n'+AJU_LAMP.map(x=>'   - '+x).join('\n')+'\n   Pengurangan tidak diberikan otomatis.';
+  const ajuText = () => ajuLead()+'\n   '+AJU_PATH.join(' > ')+'\n   Panduan langkah penginputan di Coretax (PDF) dan aturan terkait: '+TEMPLATE_URL+'\n   Permohonan juga dapat dikirim ke KPP tempat Wajib Pajak terdaftar melalui pos, perusahaan jasa ekspedisi, atau jasa kurir.\n   Sertakan atau unggah:\n'+AJU_LAMP.map(x=>'   - '+x).join('\n')+'\n   Pengurangan tidak diberikan otomatis.';
   const ajuHTML = () => ajuLead()+'<span class="path">'+AJU_PATH.map((x,i)=>'<span style="padding-left:'+(i*10)+'px">'+(i?'<i aria-hidden="true">› </i>':'')+x+'</span>').join('')+'</span>'+
     '<span class="sub">Panduan langkah penginputan di Coretax (PDF) dan aturan terkait ada di folder <a href="'+TEMPLATE_URL+'" target="_blank" rel="noopener">bit.ly/psa428</a>.</span>'+
+    '<span class="sub">Permohonan juga dapat dikirim ke KPP tempat Wajib Pajak terdaftar melalui pos, perusahaan jasa ekspedisi, atau jasa kurir.</span>'+
     'Sertakan atau unggah:<ul>'+AJU_LAMP.map(x=>'<li>'+x+'</li>').join('')+'</ul><span class="sub">Pengurangan tidak diberikan otomatis.</span>';
 
   /* Langkah yang perlu dilakukan, ditulis sebagai teks biasa agar ikut disalin. */
@@ -1027,6 +1038,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     const k = fn(o.kind, st.a);
     const t = r.tier>=0 ? o.tiers[r.tier] : null;
     const s = [];
+    if(st.a.waktu==='belum') s.push('Tunggu STP atas sanksi ini terbit. Permohonan pengurangan hanya dapat diajukan setelah sanksinya tercantum dalam STP.');
     if(k==='lapor') s.push('Sampaikan SPT yang Kurang Bayar dalam periode tarif yang berlaku. Tarifnya ditentukan oleh tanggal penyampaian SPT.');
     if(k==='betul') s.push('Sampaikan pembetulan SPT dalam periode tarif yang berlaku, lalu bayar atau setor kekurangan pajaknya paling lambat 30 Juni 2027.');
     if(k==='setor') s.push('Sampaikan SPT dalam periode tarif yang berlaku, lalu bayar atau setor pajak yang terutang paling lambat 30 Juni 2027.');
@@ -1034,9 +1046,9 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     if(k==='pokok') s.push('Lunasi pokok pajaknya dalam periode tarif yang berlaku. Sanksinya jangan dibayar, karena sanksi yang sudah dibayar tidak dapat dikurangi.');
     if(k==='utang') s.push('Lunasi utang pajaknya, yaitu jumlah menurut ketetapan termasuk sanksinya, dalam periode tarif yang berlaku. Sanksi dalam STP-nya jangan dibayar.');
     if(k==='pokok') s.push('Pembayaran atas SKP atau STP diperhitungkan lebih dulu untuk pokok pajak. Kelebihannya dihitung sebagai pembayaran sanksi dan tidak dapat dikurangi lagi, jadi cukup bayar sebesar pokok pajaknya.');
-    if(k==='sebagian') s.push(t ? 'Bayar '+(t.pct===90?'10%':'25%')+' dari sanksi yang belum dibayar, sesuai baris tarif. Sisanya yang dimohonkan untuk dihapus.' : 'Bayar 10% dari sanksi untuk tarif 90%, atau 25% untuk tarif 75%, dalam periode yang ditentukan. Sisanya yang dimohonkan untuk dihapus.');
+    if(k==='sebagian') s.push(t ? 'Bayar '+(t.pct===90?'10%':'25%')+' dari sanksi yang belum dibayar, sesuai baris tarif. Sisanya yang dimohonkan untuk dihapus. '+HINT_P : 'Bayar 10% dari sanksi untuk tarif 90%, atau 25% untuk tarif 75%, dalam periode yang ditentukan. Sisanya yang dimohonkan untuk dihapus. '+HINT_P);
     s.push('Siapkan surat permohonan tertulis dalam bahasa Indonesia yang menyebutkan jumlah sanksi menurut Wajib Pajak dan alasannya. Satu surat untuk satu SKP atau STP, ditandatangani Wajib Pajak, Wakil, atau Kuasa. Template surat permohonan tersedia di '+TEMPLATE_URL+'.');
-    s.push('Lampirkan dua surat pernyataan bermeterai sesuai format lampiran F dan G KEP-239/PJ/2026: tidak mengajukan gugatan atau upaya hukum lain (atau surat pencabutannya), dan sanksi timbul karena kekhilafan atau bukan karena kesalahan. Templatenya ada di tautan yang sama, atau buat drafnya di bawah.');
+    s.push('Lampirkan dua surat pernyataan bermeterai sesuai format lampiran F dan G KEP-239/PJ/2026: tidak mengajukan gugatan atau upaya hukum lain (atau surat pencabutannya), dan sanksi timbul karena kekhilafan atau bukan karena kesalahan. Templatenya ada di tautan yang sama, atau buat drafnya di bawah. Formulir permohonannya sama dengan permohonan Pasal 36 ayat (1) huruf a UU KUP biasa; dua surat pernyataan inilah yang membuatnya diproses sebagai permohonan KEP-239. Satu set untuk setiap SKP atau STP.');
     s.push(ajuText());
     return s;
   }
@@ -1130,6 +1142,11 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
         '<p class="hint">Jika nanti syaratnya bisa dipenuhi, ubah jawaban untuk melihat tarifnya.</p>'+
         '<div class="row"><button class="btn" data-edit="syarat">Ubah jawaban</button></div></section>';
     }
+    if(r.out==='tt' && r.why==='p9lain'){
+      return '<section class="verdict" tabindex="-1"><div class="vhead"><p class="eyebrow">Hasil</p><h2>Perlu konfirmasi</h2></div>'+
+        '<div class="note info"><p>'+WHY.p9lain+'</p></div>'+
+        '<div class="row"><a class="btn" href="tel:1500200">Hubungi Kring Pajak 1500200</a><button class="btn ghost" data-edit="lapor">Ubah jawaban</button><button class="btn ghost" data-restart="1">Mulai ulang</button></div></section>';
+    }
     if(r.out==='tt'){
       const fix = WHY_FIX[r.why] ? '<li>'+WHY_FIX[r.why]+'</li>' : '';
       return '<section class="verdict" tabindex="-1"><div class="vhead"><p class="eyebrow">Hasil</p><h2>Tidak ada tarif untuk kombinasi ini</h2></div>'+
@@ -1165,11 +1182,12 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
       if(cur>=0) nowTip = '<div class="note info"><p>Jika belum dilakukan, periode yang sedang berjalan memberi pengurangan <b>'+o.tiers[cur].pct+'%</b> sampai '+fdS(D(o.tiers[cur].until))+' ('+dueText(D(o.tiers[cur].until))+').</p><div class="row"><button class="btn ghost" data-pick="bayar" data-v="w'+cur+'">Lihat periode itu</button></div></div>';
       if(lama7(r.out)) nowTip += '<div class="note info"><p>STP-nya terbit sebelum 8 Oktober 2026, jadi tarif <b>90% atau 75%</b> (Lampiran C huruf e) masih dapat dipakai dengan membayar 10% atau 25% dari sanksi.</p><div class="row"><button class="btn ghost" data-pick="spt7" data-v="lain">Lihat tarif 90% atau 75%</button></div></div>';
     }
+    const belumNote = st.a.waktu==='belum' ? '<div class="note info"><p><b>Permohonan baru dapat diajukan setelah sanksinya terbit dalam STP.</b> Pengurangan atau penghapusan hanya dapat dimohonkan atas sanksi yang tercantum dalam SKP atau STP (Pasal 23 ayat (1) PMK 118/2024 s.t.d.d. PMK 71/2026). Sambil menunggu STP terbit, lakukan langkah di bawah dalam periode yang berlaku.</p></div>' : '';
     const cek = st.a.syarat==='cek' ? '<div class="note"><p class="nt">Syarat umum belum dipastikan</p><ul>'+SYARAT_UMUM.map(x=>'<li>'+x+'</li>').join('')+'</ul></div>' : '';
     const steps = '<div class="sect"><h3>Yang perlu dilakukan</h3><ol class="steps">'+stepsList(o,r).map((x,i,all)=>'<li>'+(i===all.length-1 ? ajuHTML() : x.replace(TEMPLATE_URL,'<a href="'+TEMPLATE_URL+'" target="_blank" rel="noopener">bit.ly/psa428</a>'))+'</li>').join('')+'</ol>'+
       tplBox('Template surat permohonan dan surat pernyataan yang disyaratkan KEP-239/PJ/2026, aturan terkait, serta PDF langkah-langkah penginputan permohonan di Coretax.')+'</div>';
     const head = '<section class="verdict" tabindex="-1"><div class="vhead"><p class="eyebrow">Hasil · '+TAHAP[o.tahap]+' · '+s.p+'</p><h2>'+o.name+'</h2></div>'+
-      pick+nowTip+cek+steps+factsHTML(o)+notesHTML(o, lama7(r.out) ? NOTES_LAMA7.concat([o.notes[0]]) : null)+scopeHTML(o, st.a.sanksi)+draftHTML()+
+      pick+nowTip+belumNote+cek+steps+factsHTML(o)+notesHTML(o, lama7(r.out) ? NOTES_LAMA7.concat([o.notes[0]]) : null)+scopeHTML(o, st.a.sanksi)+draftHTML()+
       '<div class="row"><button class="btn" data-copy="1">Salin ringkasan</button><button class="btn ghost" data-edit="'+(rel?'tglT':'bayar')+'">Ubah '+(rel?'tanggal':'periode')+'</button><button class="btn ghost" data-restart="1">Mulai ulang</button></div></section>';
     const calcBox = '<section class="calc"><h3>Hitung nominal</h3>'+
       '<div class="field"><label for="nom">Sanksi yang belum dibayar (Rp)<em>contoh</em></label><input id="nom" inputmode="numeric" autocomplete="off" value="'+st.nom+'"></div>'+
@@ -1217,15 +1235,15 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
       ]),
       N('Sanksi dalam STP: Pasal 8, 9, atau 14 ayat (4)',null,[L('s19c')]),
       N('Bunga dan denda penagihan: Pasal 19 ayat (1), (2), (3), denda PBB Pasal 11','SKP dasar tagihan diajukan keberatan?',[
-        N('Tidak',LUNAS_Q,[N('Belum',null,[L('s19a','Hanya Pasal 19 ayat (1) dan denda PBB'),L('tt','Pasal 19 ayat (2) dan (3) tidak ada di baris ini')]),N('Sudah',null,[L('s21c')])]),
-        N('Ya','Utang pajak lunas sebelum 8 Okt 2026?',[N('Belum',null,[L('s20')]),N('Sudah',null,[L('s21b')])]),
-        N('Ya, denda PBB',null,[L('tt','Denda PBB atas SKP PBB yang diajukan keberatan tidak dapat dimohonkan')])
+        N('Tidak, atau sudah dicabut',LUNAS_Q,[N('Belum',null,[L('s19a','Hanya Pasal 19 ayat (1) dan denda PBB'),L('tt','Pasal 19 ayat (2) dan (3) tidak ada di baris ini')]),N('Sudah',null,[L('s21c')])]),
+        N('Ya',null,[L('tt','STP yang SKP terkaitnya diajukan keberatan tidak dapat dimohonkan (Pasal 23 ayat (3) huruf d)')])
       ]),
       N('Sanksi lain',null,[L('tt','Tidak ada di tabel untuk SKP atau STP lama')])
     ]},
     {eyebrow:'Lampiran A, B, C, dan D · Diktum KESATU huruf d, f, g', title:'Terbit pada atau setelah 8 Oktober 2026', desc:'Terbit sampai 30 Juni 2027. Khusus SKP atas harta PPS sampai 31 Desember 2027.', q:'Surat apa?', kids:[
       N('STP dari pengawasan · Lampiran A huruf f','Sanksi apa?',[
-        N('Pasal 7, 8, atau 9','SPT atau pembetulannya disampaikan sebelum 8 Okt 2026?',[N('Ya, sebelum',null,[L('b2e')]),N('Pada atau setelah 8 Okt 2026',null,[L('b2a'),L('b2b'),L('b2c')])]),
+        N('Pasal 7 atau 8','SPT atau pembetulannya disampaikan sebelum 8 Okt 2026?',[N('Ya, sebelum',null,[L('b2e')]),N('Pada atau setelah 8 Okt 2026',null,[L('b2a'),L('b2b')])]),
+        N('Pasal 9','Pajak dibayar dan SPT dilaporkan?',[N('Keduanya sebelum 8 Okt 2026',null,[L('b2e')]),N('Keduanya mulai 8 Okt 2026',null,[L('b2c')]),N('Di luar itu',null,[L('tt','Konfirmasi ke Kring Pajak 1500200 atau KPP')])]),
         N('Pasal 14 ayat (4)',null,[L('b2h')]),
         N('Pasal 14 ayat (3)',null,[L('b2d')]),
         N('Pasal 19 ayat (2) atau (3)',null,[L('b2i')])
@@ -1234,15 +1252,19 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
         N('Sanksi dalam SKP: bunga, kenaikan, denda PBB Pasal 10',KB_Q,[N('Tidak, atau sudah dicabut',null,[L('s18a')]),N('Ya',null,[L('tt',KB_TT)])]),
         N('Sanksi dalam STP: Pasal 7, 8, 9, atau 14 ayat (4)',null,[L('s18b')])
       ]),
-      N('STP bunga atau denda penagihan · Lampiran C huruf f','Pokok pajak, atau utang pajak jika keberatan, lunas sebelum 8 Okt 2026?',[
-        N('Belum',null,[L('s22a','Pasal 19 ayat (1), (2), dan denda PBB'),L('b2i','Pasal 19 ayat (3) memakai baris Lampiran A')]),
-        N('Sudah',null,[L('s22b')])
+      N('STP bunga atau denda penagihan · Lampiran C huruf f','SKP dasar tagihan diajukan keberatan?',[
+        N('Tidak, atau sudah dicabut','Pokok pajak lunas sebelum 8 Okt 2026?',[
+          N('Belum',null,[L('s22a','Pasal 19 ayat (1), (2), dan denda PBB'),L('b2i','Pasal 19 ayat (3) memakai baris Lampiran A')]),
+          N('Sudah',null,[L('s22b')])
+        ]),
+        N('Ya',null,[L('tt','STP yang SKP terkaitnya diajukan keberatan tidak dapat dimohonkan (Pasal 23 ayat (3) huruf d)')])
       ]),
       N('SKPKB atau SKPKBT atas harta PPS · Lampiran D huruf g',KB_Q,[N('Tidak, atau sudah dicabut',null,[L('b1c')]),N('Ya',null,[L('tt',KB_TT)])])
     ]},
     {eyebrow:'Lampiran A dan D · Diktum KESATU huruf a sampai c', title:'Belum ada SKP atau STP', desc:'SPT Kurang Bayar disampaikan, dibetulkan, atau dibayar mulai 8 Okt 2026.', q:'Kondisinya?', kids:[
       N('SPT Kurang Bayar disampaikan terlambat, dibetulkan, atau dibayar terlambat','Sanksi apa?',[
-        N('Pasal 7',null,[L('b2a')]), N('Pasal 8',null,[L('b2b')]), N('Pasal 9',null,[L('b2c')])
+        N('Pasal 7',null,[L('b2a')]), N('Pasal 8',null,[L('b2b')]),
+        N('Pasal 9','Pajak dibayar dan SPT dilaporkan?',[N('Keduanya sebelum 8 Okt 2026',null,[L('b2e','Setelah STP terbit')]),N('Keduanya mulai 8 Okt 2026, atau belum dilakukan',null,[L('b2c')]),N('Di luar itu',null,[L('tt','Konfirmasi ke Kring Pajak 1500200 atau KPP')])])
       ]),
       N('Baru terdaftar NPWP atau dikukuhkan PKP',null,[L('b1a')])
     ]}
@@ -1281,16 +1303,16 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     ['PPS','Program Pengungkapan Sukarela tahun 2022 (PMK 196/PMK.03/2021).']
   ];
   const DIFF = [
-    ['Slide 17 huruf e sampai h: syarat pokok pajak lunas sebelum 8 Okt 2026.','Lampiran A huruf f: untuk Pasal 7, 8, dan 9, syaratnya SPT atau pembetulannya disampaikan sebelum 8 Okt 2026. Pasal 14 ayat (4) tidak punya syarat tambahan.'],
-    ['Slide 17 baris kedua tarif 90%: dalam periode 8 Okt s.d. 31 Des 2026.','Lampiran A huruf f: 10% dibayar paling lambat 1 bulan setelah STP terbit, paling lambat 30 Juni 2027. Contoh kasus: STP 4 Jun 2027, bayar 30 Jun 2027, tarif 90%.'],
-    ['Slide 17 huruf a sampai c: tarif menurut periode pelunasan atau pelaporan SPT.','Lampiran A huruf a dan c: tarif menurut tanggal penyampaian SPT. Huruf b: tanggal pembetulan. Untuk huruf b dan c, pajaknya juga harus dibayar 8 Okt 2026 s.d. 30 Jun 2027.'],
-    ['Slide 16 huruf a dan b: periode pelunasan atau pelaporan SPT.','Lampiran D: periode terdaftar atau dikukuhkan PKP, dan SPT disampaikan. Jika berbeda, contoh kasus memakai periode yang lebih akhir.'],
-    ['Slide 16 huruf c (PPS): tarif 100% juga untuk pelunasan paling lambat 31 Des 2026.','Lampiran D huruf g: tarif 100% hanya untuk pelunasan paling lambat 1 bulan setelah SKP terbit.'],
-    ['Slide 19 butir 4a huruf a sampai d: Pasal 19 ayat (2) dan (3) ikut tarif 100%, 50%, 25%.','Lampiran C huruf e: tarif 100%, 50%, 25% tanpa keberatan hanya untuk Pasal 19 ayat (1) dan denda PBB Pasal 11 ayat (3).'],
-    ['Slide 21 butir 4b: denda PBB Pasal 10 tidak tercantum.','Lampiran C huruf e: denda PBB Pasal 10 ayat (3) dan (4) ikut tarif 90% dan 75% jika pokok lunas sebelum 8 Okt 2026.'],
-    ['Slide 22 butir 4c bagian belum lunas: termasuk Pasal 19 ayat (3).','Lampiran C huruf f: hanya Pasal 19 ayat (1), ayat (2), dan denda PBB Pasal 11 ayat (3). Pasal 19 ayat (3) memakai baris Lampiran A huruf f.'],
-    ['Slide 22 tarif 75%: membayar 25% paling lambat 1 bulan setelah STP terbit.','Lampiran C huruf f: membayar 25% setelah 1 bulan setelah STP terbit, paling lambat 30 Juni 2027.'],
-    ['Slide 22 huruf d: denda PBB hanya untuk yang tidak diajukan keberatan.','Tabel Lampiran C huruf f menyebut diajukan atau tidak, tetapi contoh kasus lampiran menyatakan denda PBB atas SKP PBB yang diajukan keberatan tidak dapat dimohonkan. Aplikasi mengikuti contoh kasus.']
+    ['Slide 14 huruf e sampai h: syarat pokok pajak dilunasi sebelum 8 Okt 2026.','Lampiran A huruf f: untuk Pasal 7, 8, dan 9, syaratnya SPT atau pembetulannya disampaikan sebelum 8 Okt 2026. Pasal 14 ayat (4) tidak punya syarat tambahan. Untuk bunga Pasal 9, aplikasi memberi tarif 90% atau 75% jika pajak dibayar dan SPT dilaporkan sebelum 8 Okt 2026 (kedua sumber sepakat). Di luar itu, aplikasi menyarankan konfirmasi ke Kring Pajak atau KPP. Pasal 7 dan 8 mengikuti lampiran.'],
+    ['Slide 14 baris kedua tarif 90%: dalam periode 8 Okt s.d. 31 Des 2026.','Lampiran A huruf f: 10% dibayar paling lambat 1 bulan setelah STP terbit, paling lambat 30 Juni 2027. Contoh kasus: STP 4 Jun 2027, bayar 30 Jun 2027, tarif 90%. Slide 15 (pemeriksaan) sudah menulis s.d. 30 Juni 2027.'],
+    ['Slide 14 huruf a sampai c: tarif menurut periode pelunasan atau pelaporan SPT.','Lampiran A huruf a dan c: tarif menurut tanggal penyampaian SPT. Huruf b: tanggal pembetulan. Untuk huruf b dan c, pajaknya juga harus dibayar 8 Okt 2026 s.d. 30 Jun 2027.'],
+    ['Slide 13 huruf a dan b: periode pelunasan atau pelaporan SPT.','Lampiran D: periode terdaftar atau dikukuhkan PKP, dan SPT disampaikan. Jika berbeda, contoh kasus memakai periode yang lebih akhir.'],
+    ['Slide 13 huruf c (PPS): tarif 100% juga untuk pelunasan paling lambat 31 Des 2026.','Lampiran D huruf g: tarif 100% hanya untuk pelunasan paling lambat 1 bulan setelah SKP terbit.'],
+    ['Slide 16 butir 4a huruf a sampai d: Pasal 19 ayat (2) dan (3) ikut tarif 100%, 50%, 25%.','Lampiran C huruf e: tarif 100%, 50%, 25% tanpa keberatan hanya untuk Pasal 19 ayat (1) dan denda PBB Pasal 11 ayat (3).'],
+    ['Slide 18 butir 4b: denda PBB Pasal 10 tidak tercantum.','Lampiran C huruf e: denda PBB Pasal 10 ayat (3) dan (4) ikut tarif 90% dan 75% jika pokok lunas sebelum 8 Okt 2026.'],
+    ['Slide 19 butir 4c bagian belum lunas: termasuk Pasal 19 ayat (3).','Lampiran C huruf f: hanya Pasal 19 ayat (1), ayat (2), dan denda PBB Pasal 11 ayat (3). Pasal 19 ayat (3) memakai baris Lampiran A huruf f.'],
+    ['Slide 19 tarif 75%: tertulis membayar 10% paling lambat 1 bulan setelah STP terbit.','Lampiran C huruf f: membayar 25% setelah 1 bulan setelah STP terbit, paling lambat 30 Juni 2027.'],
+    ['Slide 19 huruf b: denda PBB hanya untuk yang tidak diajukan keberatan.','Tabel Lampiran C huruf f menyebut diajukan atau tidak, tetapi contoh kasus lampiran menyatakan denda PBB atas SKP PBB yang diajukan keberatan tidak dapat dimohonkan. Aplikasi mengikuti contoh kasus.']
   ];
   function guideHTML(){
     const items = []; let placed = false;
@@ -1304,11 +1326,11 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     return '<div class="guide">'+
       '<section class="gsec"><h2>Tanggal penting</h2><p class="hint">Baris yang dihitung dari tanggal terbit, misalnya hasil pemeriksaan, punya batas sendiri. Aplikasi menghitungnya di langkah terakhir.</p><ul class="tl">'+items.join('')+'</ul></section>'+
       '<section class="gsec"><h2>Template, aturan, dan panduan Coretax</h2><p class="hint">Dokumen yang dilampirkan pada permohonan: surat permohonan pengurangan atau penghapusan sanksi, surat pernyataan tidak mengajukan gugatan atau upaya hukum lain (lampiran F), dan surat pernyataan sanksi timbul karena kekhilafan atau bukan karena kesalahan (lampiran G). Folder yang sama juga memuat aturan terkait dan PDF langkah-langkah pengajuan di Coretax.</p>'+tplBox('Folder Google Drive berisi template surat, aturan terkait, dan PDF panduan penginputan permohonan di Coretax.')+'</section>'+
-      '<section class="gsec"><h2>Cara mengajukan permohonan</h2><div class="aju">'+ajuHTML()+'</div></section>'+
+      '<section class="gsec"><h2>Cara mengajukan permohonan</h2><div class="aju">'+ajuHTML()+'</div><p class="hint">Formulir permohonannya sama dengan permohonan Pasal 36 ayat (1) huruf a UU KUP biasa. Yang membuatnya diproses sebagai permohonan KEP-239 adalah dua surat pernyataan (lampiran F dan G), satu set untuk setiap SKP atau STP.</p></section>'+
       '<section class="gsec"><h2>Syarat umum</h2><p class="hint">Diktum KETIGA dan KEEMPAT KEP-239/PJ/2026, serta Pasal 23 ayat (5) huruf a PMK 118/2024 s.t.d.d. PMK 71/2026. Berlaku untuk semua baris.</p><ul class="rules">'+SYARAT_UMUM.map(s=>'<li>'+s+'</li>').join('')+'</ul></section>'+
       '<section class="gsec"><h2>Syarat formal permohonan</h2><p class="hint">Petikan Pasal 23 dan 24 pada lampiran huruf H KEP-239/PJ/2026.</p><ul class="rules">'+SYARAT_FORMAL.map(s=>'<li>'+s+'</li>').join('')+'<li>'+SYARAT_KECUALI+'</li></ul></section>'+
-      '<section class="gsec"><h2>Perbedaan tabel slide dengan lampiran KEP</h2><p class="hint">Untuk petugas yang memakai tabel slide 16 sampai 22. Aplikasi mengikuti lampiran KEP-239/PJ/2026.</p><ul class="diff">'+
-        DIFF.map(d=>'<li><span class="was"><b>Tabel slide</b>'+d[0].replace(/^Slide /,'')+'</span><span class="is"><b>Lampiran KEP</b>'+d[1].replace(/^Lampiran /,'')+'</span></li>').join('')+'</ul></section>'+
+      '<section class="gsec"><h2>Perbedaan salindia dengan lampiran KEP</h2><p class="hint">Untuk petugas yang memakai salindia sosialisasi DJP (slide 13 sampai 19). Aplikasi mengikuti lampiran KEP-239/PJ/2026. Untuk bunga Pasal 9 pada pengawasan, aplikasi memakai kondisi yang sama di kedua sumber.</p><ul class="diff">'+
+        DIFF.map(d=>'<li><span class="was"><b>Salindia DJP · slide</b>'+d[0].replace(/^Slide /,'')+'</span><span class="is"><b>Lampiran KEP</b>'+d[1].replace(/^Lampiran /,'')+'</span></li>').join('')+'</ul></section>'+
       '<section class="gsec"><h2>Istilah</h2><dl class="gloss">'+ISTILAH.map(x=>'<dt>'+x[0]+'</dt><dd>'+x[1]+'</dd>').join('')+'</dl></section>'+
       '<section class="gsec"><h2>Dasar aturan</h2><ul class="src">'+
         '<li>KEP-239/PJ/2026 tentang Kebijakan Perpajakan sehubungan dengan Pengurangan atau Penghapusan Sanksi Administratif, ditetapkan dan berlaku 8 Oktober 2026. Lampiran A sampai D memuat tabel tarif, E contoh kasus, F dan G contoh surat pernyataan, H petikan Pasal 23 dan 24.</li>'+
@@ -1328,7 +1350,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
       'Baris: '+o.name+' · KEP-239/PJ/2026, '+o.ref,
       'Kondisi: '+o.kondisi.join('; '),
       'Syarat khusus: '+arr(o.syarat).join(' ')];
-    ['spt7','lapor','keberatan','lunas'].forEach(k=>{ if(st.a[k]) L1.push(KLABEL[k]+': '+ansText(k,st.a[k])); });
+    ['spt7','lapor','keberatan','lunas'].forEach(k=>{ if(st.a[k]) L1.push(klabel(k)+': '+ansText(k,st.a[k])); });
     if(rel) L1.push('Tanggal terbit: '+fdS(D(st.a.tglT)),'Tanggal bayar: '+fdS(D(st.a.tglB)));
     else L1.push('Periode: '+r.opt.t);
     L1.push('Pengurangan: '+pct);
