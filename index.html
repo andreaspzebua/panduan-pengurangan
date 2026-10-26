@@ -166,6 +166,8 @@ input[inputmode="numeric"]{font-family:var(--font-mono);font-variant-numeric:tab
 .cklist{list-style:none;padding:0;margin:0;display:grid;gap:6px;font-size:14px}
 .cklist label{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:start;cursor:pointer}
 .cklist input{width:18px;height:18px;padding:0;margin:1px 0 0;accent-color:var(--accent)}
+.cklist.doc b{font-weight:600}
+.cklist.doc small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
 .cklist input:checked + span{color:var(--muted);text-decoration:line-through}
 
 .sect{display:grid;gap:8px}
@@ -835,19 +837,21 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
   };
   function docItems(o,r){
     const k = fn(o.kind, st.a), t = r.tier>=0 ? o.tiers[r.tier] : null;
-    const pay = k==='utang' ? 'Utang pajak sudah lunas.'
-      : k==='sebagian' ? 'Bagian sanksi yang wajib dibayar ('+(t?(t.pct===90?'10%':'25%'):'10% atau 25%')+') sudah dibayar dalam periode, dan pokok pajaknya (jika ada) sudah lunas.'
-      : 'Pokok pajak, atau kurang bayar dalam SPT, sudah lunas.';
-    return [pay+' Simpan bukti pembayarannya.',
-      'Surat permohonan: satu surat untuk satu SKP atau STP, menyebutkan jumlah sanksi menurut Wajib Pajak dan alasannya, ditandatangani Wajib Pajak, Wakil, atau Kuasa.',
-      'Surat pernyataan tidak mengajukan gugatan dan/atau upaya hukum lain (format F), bermeterai.',
-      'Surat pernyataan sanksi timbul karena kekhilafan atau bukan karena kesalahan (format G), bermeterai.',
-      'Scan SKP atau STP yang dimohonkan'+(st.a.waktu==='belum'?', setelah STP terbit.':'.'),
-      'Jika pernah mengajukan gugatan atau upaya hukum lain: surat permohonan pencabutannya.'];
+    const pay = k==='utang' ? {n:'Bukti pelunasan utang pajak', d:'Utang pajak adalah jumlah menurut ketetapan atau keputusan keberatan, termasuk sanksinya.'}
+      : k==='sebagian' ? {n:'Bukti pembayaran '+(t?(t.pct===90?'10%':'25%'):'10% atau 25%')+' sanksi', d:'Dibayar dalam periode tarif yang berlaku. Jika ada pokok pajak, sertakan juga bukti pelunasannya.'}
+      : k==='pokok' ? {n:'Bukti pelunasan pokok pajak', d:''}
+      : {n:'Bukti pembayaran pajak yang kurang dibayar dalam SPT', d:''};
+    return [pay,
+      {n:'Surat permohonan', d:'Satu surat untuk satu SKP atau STP, berisi jumlah sanksi menurut Wajib Pajak dan alasannya, ditandatangani Wajib Pajak, Wakil, atau Kuasa.'},
+      {n:'Surat pernyataan tidak mengajukan gugatan dan/atau upaya hukum lainnya', d:'Format F, ditandatangani di atas meterai.'},
+      {n:'Surat pernyataan sanksi timbul karena kekhilafan atau bukan karena kesalahan', d:'Format G, ditandatangani di atas meterai.'},
+      {n:'SKP atau STP yang dimohonkan', d:st.a.waktu==='belum'?'Setelah STP terbit.':''},
+      {n:'Surat Kuasa Khusus', d:'Hanya jika surat ditandatangani Kuasa.'},
+      {n:'Salinan surat permohonan pencabutan gugatan atau upaya hukum lainnya', d:'Hanya jika pernah mengajukan. Pencabutannya diajukan lebih dulu, terpisah, ke tempat gugatan atau upaya hukum itu diajukan (misalnya Pengadilan Pajak), lalu salinan surat permohonan pencabutannya dilampirkan (Diktum KEEMPAT huruf b).'}];
   }
   function docsHTML(o,r){
-    return '<div class="sect gapt"><h3>Siapkan dokumen</h3><p class="hint">Centang yang sudah siap. Satu set dokumen untuk setiap SKP atau STP.</p><ul class="cklist">'+
-      docItems(o,r).map(x=>'<li><label><input type="checkbox"><span>'+x+'</span></label></li>').join('')+'</ul>'+
+    return '<div class="sect gapt"><h3>Siapkan dokumen</h3><p class="hint">Satu set dokumen untuk setiap SKP atau STP. Jika mengajukan lewat Coretax (Cara 1), semua dokumen di-scan lalu diunggah. Jika mengajukan langsung ke KPP atau lewat pos (Cara 2), dokumen dilampirkan pada surat permohonan. Centang yang sudah siap.</p><ul class="cklist doc">'+
+      docItems(o,r).map(x=>'<li><label><input type="checkbox"><span><b>'+x.n+'</b>'+(x.d?'<small>'+x.d+'</small>':'')+'</span></label></li>').join('')+'</ul>'+
       '<p class="hint">Formulir permohonannya sama dengan permohonan Pasal 36 ayat (1) huruf a UU KUP biasa. Dua surat pernyataan inilah yang membuatnya diproses sebagai permohonan KEP-239. Draf surat pernyataan juga bisa dibuat di bagian bawah halaman ini.</p>'+
       tplBox('Template surat permohonan dan surat pernyataan, aturan terkait, buku panduan PSA dari DJP, serta PDF langkah-langkah penginputan permohonan di Coretax.')+'</div>';
   }
@@ -865,11 +869,11 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
         it(4,'Permohonan Pertama/Kedua','<b>Pertama</b>','Pilih Kedua jika sanksi dalam surat ini sudah pernah dimohonkan.')+
         it(5,'Jumlah Sanksi Administratif Menurut Wajib Pajak','<b id="ctxJml">'+jmlText(pct)+'</b>', hapus?'Seluruh sanksi dimohonkan dihapus.':'Sanksi yang tetap ditanggung setelah pengurangan. Isi nominal sanksi Anda di kalkulator di bawah untuk melihat angkanya.')+
         it(6,'Alasan','<span class="ctxq">'+esc(al)+'</span><span class="row"><button class="btn ghost" data-copyval="'+esc(al)+'">Salin alasan</button></span>')+
-        it(7,'Dokumen','<b>Unggah dokumen di atas</b>','Lewat menu Dokumen > Unggah. Setelah itu kembali ke Alur Kasus, tanda tangani dengan passphrase, lalu tekan Lanjut untuk mengirim.')+
+        it(7,'Dokumen','<b>Unggah hasil scan dokumen</b>','Semua dokumen dari daftar "Siapkan dokumen" diunggah lewat menu Dokumen > Unggah. Setelah itu kembali ke Alur Kasus, tanda tangani dengan passphrase, lalu tekan Lanjut untuk mengirim.')+
         '</dl>';
     }
     h += '<p class="hint">Panduan langkah penginputan di Coretax (PDF) dan buku panduan PSA ada di folder <a href="'+TEMPLATE_URL+'" target="_blank" rel="noopener">bit.ly/psa428</a>.</p>'+
-      '<h4>Cara 2 · Langsung ke KPP</h4><p>Sampaikan ke KPP tempat Wajib Pajak terdaftar, atau kirim lewat pos, perusahaan jasa ekspedisi, atau jasa kurir.'+(pct!=null?' Pilihan pengurangan atau penghapusan, jumlah sanksi menurut Wajib Pajak, dan alasan di atas dipakai juga di surat permohonan.':'')+'</p></div>';
+      '<h4>Cara 2 · Langsung ke KPP</h4><p>Sampaikan surat permohonan beserta dokumen dari daftar "Siapkan dokumen" ke KPP tempat Wajib Pajak terdaftar, atau kirim lewat pos, perusahaan jasa ekspedisi, atau jasa kurir.'+(pct!=null?' Pilihan pengurangan atau penghapusan, jumlah sanksi menurut Wajib Pajak, dan alasan di atas dipakai juga di surat permohonan.':'')+'</p></div>';
     return h;
   }
 
@@ -1132,7 +1136,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
 
   /* Cara mengajukan permohonan: KPP tempat terdaftar atau Coretax. */
   const AJU_PATH = ['Layanan Wajib Pajak','Layanan Administrasi','Buat Permohonan Layanan Administrasi','AS.26-03 Keberatan Non Keberatan','AS.26-03 LA.26-03 Permohonan Pengurangan atau Penghapusan Sanksi Administratif (Pasal 36 ayat (1) huruf a UU KUP)'];
-  const AJU_LAMP = ['Alasan penghapusan sanksi.','Scan SKP atau STP yang dimohonkan.','Surat pernyataan sesuai KEP-239/PJ/2026 (lampiran F dan G).','Bukti pelunasan pokok pajak, dalam hal terdapat pokok dalam STP, atau bukti pembayaran sebagian sanksi administratif.','Surat permohonan pencabutan gugatan atau upaya hukum lain, jika sebelumnya pernah diajukan (Diktum KEEMPAT huruf b).'];
+  const AJU_LAMP = ['Alasan penghapusan sanksi.','Scan SKP atau STP yang dimohonkan.','Surat pernyataan sesuai KEP-239/PJ/2026 (lampiran F dan G).','Bukti pelunasan pokok pajak, dalam hal terdapat pokok dalam STP, atau bukti pembayaran sebagian sanksi administratif.','Surat Kuasa Khusus, jika surat ditandatangani Kuasa.','Salinan surat permohonan pencabutan gugatan atau upaya hukum lain, jika pernah diajukan. Pencabutannya diajukan lebih dulu, terpisah, ke tempat gugatan atau upaya hukum itu diajukan (Diktum KEEMPAT huruf b).'];
   const ajuLead = () => 'Sampaikan permohonan paling lambat 1 Oktober 2028 ('+dueText(D(PERMOHONAN))+') ke KPP tempat Wajib Pajak terdaftar, atau melalui Coretax menu:';
   const ajuText = () => ajuLead()+'\n   '+AJU_PATH.join(' > ')+'\n   Panduan langkah penginputan di Coretax (PDF) dan aturan terkait: '+TEMPLATE_URL+'\n   Permohonan juga dapat dikirim ke KPP tempat Wajib Pajak terdaftar melalui pos, perusahaan jasa ekspedisi, atau jasa kurir.\n   Sertakan atau unggah:\n'+AJU_LAMP.map(x=>'   - '+x).join('\n')+'\n   Pengurangan tidak diberikan otomatis.';
   const pathHTML = () => '<span class="path">'+AJU_PATH.map((x,i)=>'<span style="padding-left:'+(i*10)+'px">'+(i?'<i aria-hidden="true">› </i>':'')+x+'</span>').join('')+'</span>';
@@ -1462,7 +1466,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     L1.push('Yang perlu dilakukan:');
     stepsList(o,r).forEach((x,i)=>L1.push((i+1)+'. '+x));
     L1.push('Siapkan dokumen:');
-    docItems(o,r).forEach(x=>L1.push('- '+x));
+    docItems(o,r).forEach(x=>L1.push('- '+x.n+(x.d?' ('+x.d+')':'')));
     L1.push('Ajukan paling lambat 1 Oktober 2028 lewat Coretax ('+AJU_PATH.join(' > ')+'), atau langsung ke KPP tempat Wajib Pajak terdaftar (bisa juga lewat pos, ekspedisi, atau kurir). Template dan panduan: '+TEMPLATE_URL);
     if(r.tier>=0){ const pc=o.tiers[r.tier].pct; L1.push('Isian Coretax: Keadaan Kahar = Tidak; Pengurangan/Penghapusan = '+(pc===100?'Penghapusan':'Pengurangan')+'; Jumlah sanksi menurut WP = '+jmlText(pc)+'; Alasan: '+alasanText(pc)); }
     L1.push('Catatan: perkiraan dari alat bantu. Keputusan ada pada DJP.');
