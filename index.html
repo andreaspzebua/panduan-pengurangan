@@ -830,8 +830,8 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
   const jmlText = pct => pct===100 ? 'Rp 0' : (st.nomSet && nomVal() ? rp(nomVal()*(100-pct)/100) : (100-pct)+'% dari sanksi yang belum dibayar');
   const kbWarn = id => {
     const m = {b2a:'SPT berstatus Kurang Bayar. SPT Nihil atau Lebih Bayar tidak termasuk.',
-      b2b:'Hasil pembetulan Kurang Bayar, dan kekurangan pajaknya dibayar pada 8 Okt 2026 s.d. 30 Jun 2027.',
-      b2c:'Pajak dibayar dan SPT dilaporkan pada 8 Okt 2026 s.d. 30 Jun 2027.',
+      b2b:'Hasil pembetulan Kurang Bayar, dan kekurangan pajaknya dibayar mulai 8 Okt 2026.',
+      b2c:'Pajak dibayar dan SPT dilaporkan mulai 8 Okt 2026.',
       b1a:st.a.sanksi==='p7'?'SPT berstatus Kurang Bayar. SPT Nihil atau Lebih Bayar tidak termasuk.':''}[id];
     return m ? '<p class="kbwarn">⚠ Syarat: '+m+'</p>' : '';
   };
@@ -1149,15 +1149,21 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
   function stepsList(o,r){
     const k = fn(o.kind, st.a);
     const t = r.tier>=0 ? o.tiers[r.tier] : null;
+    let lo = null, hi = null;
+    if(t){
+      if(o.mode==='rel' && r.ev && r.ev.range){ lo = r.ev.range[0]; hi = r.ev.range[1]; }
+      else if(t.from){ lo = D(t.from); hi = D(t.until); }
+    }
+    const when = hi!=null ? ((r.tier===0 || lo<=TODAY) ? 'paling lambat '+fdS(hi) : 'pada '+fdS(lo)+' s.d. '+fdS(hi)) : 'dalam periode tarif yang berlaku';
     const s = [];
-    if(k==='lapor') s.push('Sampaikan SPT yang Kurang Bayar dalam periode tarif yang berlaku. Tarifnya mengikuti tanggal penyampaian SPT.');
-    if(k==='betul') s.push('Sampaikan pembetulan SPT dalam periode tarif yang berlaku, dan bayar atau setor kekurangan pajaknya paling lambat 30 Juni 2027.');
-    if(k==='setor') s.push('Bayar atau setor pajak yang terutang dan sampaikan SPT dalam periode tarif yang berlaku, paling lambat 30 Juni 2027.');
-    if(k==='daftar') s.push('Daftar NPWP atau ajukan pengukuhan PKP, lalu sampaikan SPT lama yang Kurang Bayar. Tarifnya mengikuti periode yang lebih akhir dari keduanya.');
-    if(k==='pokok') s.push('Lunasi pokok pajak dalam periode tarif yang berlaku.');
-    if(k==='utang') s.push('Lunasi utang pajak, yaitu jumlah menurut ketetapan atau keputusan keberatan termasuk sanksinya, dalam periode tarif yang berlaku.');
-    if(k==='sebagian') s.push((t ? 'Bayar '+(t.pct===90?'10%':'25%')+' dari sanksi dalam periode tarif yang berlaku.' : 'Bayar 10% dari sanksi untuk tarif 90%, atau 25% untuk tarif 75%, dalam periode yang ditentukan.')+' '+HINT_P);
-    s.push('Ajukan permohonan pengurangan atau penghapusan sanksi (PSA) sesuai ketentuan. Dokumen dan cara pengajuannya ada di bawah.');
+    if(k==='lapor') s.push('Sampaikan SPT yang Kurang Bayar '+when+'. Tarifnya mengikuti tanggal penyampaian SPT.');
+    if(k==='betul') s.push('Bayar atau setor kekurangan pajaknya dan sampaikan pembetulan SPT '+when+'.');
+    if(k==='setor') s.push('Bayar atau setor pajak yang terutang dan sampaikan SPT '+when+'.');
+    if(k==='daftar') s.push('Daftar NPWP atau ajukan pengukuhan PKP, lalu sampaikan SPT lama yang Kurang Bayar, '+when+'. Tarifnya mengikuti periode yang lebih akhir dari keduanya.');
+    if(k==='pokok') s.push('Lunasi pokok pajak '+when+'.');
+    if(k==='utang') s.push('Lunasi utang pajak, yaitu jumlah menurut ketetapan atau keputusan keberatan termasuk sanksinya, '+when+'.');
+    if(k==='sebagian') s.push((t ? 'Bayar '+(t.pct===90?'10%':'25%')+' dari sanksi '+when+'.' : 'Bayar 10% dari sanksi untuk tarif 90%, atau 25% untuk tarif 75%, dalam periode yang ditentukan.')+' '+HINT_P);
+    s.push('Setelah '+(st.a.waktu==='belum'?'STP atas sanksi ini terbit':'itu')+', ajukan permohonan pengurangan atau penghapusan sanksi (PSA) sesuai ketentuan paling lambat 1 Oktober 2028 ('+dueText(D(PERMOHONAN))+'). Dokumen dan cara pengajuannya ada di bawah.');
     return s;
   }
 
