@@ -402,7 +402,7 @@ const NOTE_SEBELUM = 'Jika SPT atau pembetulannya sudah disampaikan sebelum 8 Ok
 const NOTE_P9 = 'Untuk bunga Pasal 9, tarif 90% atau 75% dipakai jika pajak dibayar dan SPT dilaporkan sebelum 8 Oktober 2026. Lampiran KEP berpatokan pada tanggal SPT dilaporkan, sedangkan salindia DJP (slide 14) pada tanggal pelunasan, jadi jika kedua tanggal itu berbeda sisi dari 8 Oktober 2026, konfirmasikan ke Kring Pajak 1500200 atau KPP.';
 /* Denda Pasal 7 ayat (1) dalam STP yang terbit sebelum 8 Okt 2026, sedangkan SPT Kurang Bayarnya baru disampaikan mulai 8 Okt 2026. */
 const NOTES_LAMA7 = [
-  'STP denda ini terbit sebelum 8 Oktober 2026, tetapi SPT Kurang Bayarnya disampaikan mulai 8 Oktober 2026, jadi tarifnya mengikuti tanggal penyampaian SPT (Diktum KESATU huruf a). Jangan bayar sanksi dalam STP lebih dulu, karena sanksi yang sudah dibayar tidak dapat dikurangi.',
+  'STP denda ini terbit sebelum 8 Oktober 2026, tetapi SPT Kurang Bayarnya disampaikan mulai 8 Oktober 2026, jadi tarifnya mengikuti tanggal penyampaian SPT (Diktum KESATU huruf a). Pengurangan diberikan atas sanksi yang belum dibayar.',
   'Jika SPT baru dapat disampaikan setelah 30 Juni 2027, atau SPT-nya ternyata tidak Kurang Bayar, tarif 90% atau 75% (Lampiran C huruf e) masih dapat dipakai dengan membayar 10% atau 25% dari sanksi.'
 ];
 const ASK_P = 'Kapan sebagian sanksi dibayar, dan berapa persen?';
@@ -1146,14 +1146,14 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     const k = fn(o.kind, st.a);
     const t = r.tier>=0 ? o.tiers[r.tier] : null;
     const s = [];
-    if(k==='lapor') s.push('Sampaikan SPT yang Kurang Bayar dalam periode tarif yang berlaku. Tarifnya ditentukan oleh tanggal penyampaian SPT.');
-    if(k==='betul') s.push('Sampaikan pembetulan SPT dalam periode tarif yang berlaku, lalu bayar atau setor kekurangan pajaknya paling lambat 30 Juni 2027.');
-    if(k==='setor') s.push('Sampaikan SPT dalam periode tarif yang berlaku, lalu bayar atau setor pajak yang terutang paling lambat 30 Juni 2027.');
+    if(k==='lapor') s.push('Sampaikan SPT yang Kurang Bayar dalam periode tarif yang berlaku. Tarifnya mengikuti tanggal penyampaian SPT.');
+    if(k==='betul') s.push('Sampaikan pembetulan SPT dalam periode tarif yang berlaku, dan bayar atau setor kekurangan pajaknya paling lambat 30 Juni 2027.');
+    if(k==='setor') s.push('Bayar atau setor pajak yang terutang dan sampaikan SPT dalam periode tarif yang berlaku, paling lambat 30 Juni 2027.');
     if(k==='daftar') s.push('Daftar NPWP atau ajukan pengukuhan PKP, lalu sampaikan SPT lama yang Kurang Bayar. Tarifnya mengikuti periode yang lebih akhir dari keduanya.');
-    if(k==='pokok') s.push('Lunasi pokok pajaknya dalam periode tarif yang berlaku. Sanksinya jangan dibayar, karena sanksi yang sudah dibayar tidak dapat dikurangi.');
-    if(k==='utang') s.push('Lunasi utang pajaknya, yaitu jumlah menurut ketetapan termasuk sanksinya, dalam periode tarif yang berlaku. Sanksi dalam STP-nya jangan dibayar.');
-    if(k==='pokok') s.push('Pembayaran atas SKP atau STP diperhitungkan lebih dulu untuk pokok pajak. Kelebihannya dihitung sebagai pembayaran sanksi dan tidak dapat dikurangi lagi, jadi cukup bayar sebesar pokok pajaknya.');
-    if(k==='sebagian') s.push(t ? 'Bayar '+(t.pct===90?'10%':'25%')+' dari sanksi yang belum dibayar, sesuai baris tarif. Sisanya yang dimohonkan untuk dihapus. '+HINT_P : 'Bayar 10% dari sanksi untuk tarif 90%, atau 25% untuk tarif 75%, dalam periode yang ditentukan. Sisanya yang dimohonkan untuk dihapus. '+HINT_P);
+    if(k==='pokok') s.push('Lunasi pokok pajak dalam periode tarif yang berlaku.');
+    if(k==='utang') s.push('Lunasi utang pajak, yaitu jumlah menurut ketetapan atau keputusan keberatan termasuk sanksinya, dalam periode tarif yang berlaku.');
+    if(k==='sebagian') s.push((t ? 'Bayar '+(t.pct===90?'10%':'25%')+' dari sanksi dalam periode tarif yang berlaku.' : 'Bayar 10% dari sanksi untuk tarif 90%, atau 25% untuk tarif 75%, dalam periode yang ditentukan.')+' '+HINT_P);
+    s.push('Ajukan permohonan pengurangan atau penghapusan sanksi (PSA) sesuai ketentuan. Dokumen dan cara pengajuannya ada di bawah.');
     return s;
   }
 
