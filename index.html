@@ -141,7 +141,12 @@ a{color:var(--accent);text-underline-offset:3px}
 .path i{font-style:normal;color:var(--accent)}
 
 .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
-.field{display:grid;gap:5px;min-width:0}
+.field{display:grid;gap:5px;min-width:0;align-content:start}
+.datebox{display:grid;gap:12px;padding:14px;border:1px solid var(--line-strong);border-radius:12px;background:var(--accent-soft)}
+.datebox input{background:var(--surface)}
+.dlead{font-size:14px}
+.datebox .errmsg:empty{display:none}
+.tiers-eb{margin-top:8px}
 .field label{font-size:13px;font-weight:600}
 .fh{display:grid;gap:3px;font-size:12.5px;line-height:1.45;color:var(--muted)}
 .fh b{color:var(--ink);font-weight:600}
@@ -193,8 +198,9 @@ input[inputmode="numeric"]{font-family:var(--font-mono);font-variant-numeric:tab
 .amt b{font-weight:500;font-size:14px}
 .amt span{color:var(--muted)}
 
-.scope,.help,.draft{margin-top:2px;border-top:1px dashed var(--line);padding-top:10px}
-.help summary,.scope summary,.leaf summary,.draft summary{cursor:pointer;font-weight:600;font-size:14px}
+.scope,.help,.draft,.dasar{margin-top:2px;border-top:1px dashed var(--line);padding-top:10px}
+.help summary,.scope summary,.leaf summary,.draft summary,.dasar summary{cursor:pointer;font-weight:600;font-size:14px}
+.dasar .fold{padding-top:10px}
 .scope ul{list-style:none;padding:8px 0 0;display:grid;gap:6px;font-size:14px}
 .scope li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:6px}
 .scope li i{font:500 12px var(--font-mono);font-style:normal;color:var(--muted)}
@@ -302,7 +308,7 @@ a.btn{display:inline-block;text-decoration:none;text-align:center}
 
   <main id="view" role="tabpanel" aria-live="polite"></main>
 
-  <footer class="foot">Alat bantu untuk memperkirakan tarif berdasarkan Lampiran KEP-239/PJ/2026 dan Pasal 23 dan 24 PMK 118/2024 s.t.d.d. PMK 71/2026. Hasilnya perkiraan, bukan keputusan. Keputusan ada pada Direktorat Jenderal Pajak. Untuk kasus di luar tabel, hubungi Kring Pajak 1500200 atau KPP tempat Wajib Pajak terdaftar.<br>Disusun oleh Aendreii.</footer>
+  <footer class="foot">Alat bantu untuk memperkirakan tarif berdasarkan Lampiran KEP-239/PJ/2026 dan Pasal 23 dan 24 PMK 118/2024 s.t.d.d. PMK 71/2026. Hasilnya perkiraan, bukan keputusan. Keputusan ada pada Direktorat Jenderal Pajak. Untuk kasus di luar tabel, hubungi Kring Pajak 1500200 atau KPP tempat Wajib Pajak terdaftar.<br>Disusun oleh <a href="https://www.instagram.com/aendreii/" target="_blank" rel="noopener">@aendreii</a> dan <a href="https://www.instagram.com/tax.in.talk/" target="_blank" rel="noopener">@tax.in.talk</a> (Instagram).</footer>
 </div>
 
 <script id="logic">
@@ -812,7 +818,10 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
   }
   const tplBox = lead => '<div class="tpl"><p><b>Template, aturan, dan panduan Coretax</b>'+lead+'</p><a class="btn" href="'+TEMPLATE_URL+'" target="_blank" rel="noopener">Buka folder</a><span class="tpl-url">'+TEMPLATE_URL+' · Google Drive</span></div>';
   /* Nama surat yang belum terbit: STP untuk jalur "Belum ada", atau nama surat jika tanggal terbit yang diisi masih di masa depan. */
-  const nanti = o => st.a.waktu==='belum' ? 'STP' : (o && o.mode==='rel' && st.a.tglT && D(st.a.tglT)>TODAY) ? o.docName : '';
+  /* Nama surat menurut sanksi yang dipilih, untuk baris yang mencakup beberapa jenis SKP. */
+  const DOC_SKP = {p13_2:'SKPKB',p13_3:'SKPKB',p17c:'SKPKB',p17d:'SKPKB',p15_2:'SKPKBT',pbb10:'SKP PBB'};
+  const dn = o => (o.docName==='SKP atau SKP PBB' && DOC_SKP[st.a.sanksi]) || o.docName;
+  const nanti = o => st.a.waktu==='belum' ? 'STP' : (o && o.mode==='rel' && st.a.tglT && D(st.a.tglT)>TODAY) ? dn(o) : '';
   const helpBox = (title, items) => '<details class="help"><summary>'+title+'</summary><ul class="rules" style="padding-top:8px">'+items.map(x=>'<li>'+x+'</li>').join('')+'</ul></details>';
   const rumusHTML = tab => '<section class="rumus" role="note" aria-label="Rumus cepat, gambaran umum"><p class="rhead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>Rumus cepat · gambaran umum</p>'+
     '<div class="rrow"><span class="rtag t100">100% · 50% · 25%</span><p>Masih ada pokok pajak, atau pajak dalam SPT, yang dilunasi mulai 8 Okt 2026. Makin cepat dilunasi, makin besar pengurangannya.</p></div>'+
@@ -1056,17 +1065,17 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     const o = OUT[r.pre];
     const dateLabel = o.verb==='pokok pajak dilunasi' ? 'Tanggal pelunasan pokok pajak' : 'Tanggal pembayaran sebagian sanksi';
     const vT = st.a.tglT||st.keepT||'', vB = st.a.tglB||st.keepB||'';
-    return '<section class="qcard" tabindex="-1"><h2>Kapan '+o.docName+' terbit, dan kapan '+o.verb+'?</h2>'+
-      '<p class="hint">Tarif ditentukan oleh jarak antara tanggal terbit dan tanggal bayar, jadi isi kedua tanggal di bawah.</p>'+
-      '<p class="eyebrow">Persyaratan menurut lampiran</p>'+tiersHTML(o,0,-1,null,null)+
-      '<div class="fields"><div class="field"><label for="tgT">Tanggal '+o.docName+' terbit</label><input id="tgT" type="date" value="'+vT+'">'+
+    return '<section class="qcard" tabindex="-1"><h2>Kapan '+dn(o)+' terbit, dan kapan '+o.verb+'?</h2>'+
+      '<div class="datebox"><p class="dlead"><b>Isi kedua tanggal, walaupun masih perkiraan.</b> Dari kedua tanggal ini tarif Anda dihitung, lalu ditampilkan langkah yang perlu dilakukan, dokumen yang perlu disiapkan, dan cara mengajukan permohonan.</p>'+
+      '<div class="fields"><div class="field"><label for="tgT">Tanggal '+dn(o)+' terbit</label><input id="tgT" type="date" value="'+vT+'">'+
         '<small class="fh"><span><b>Belum terbit?</b> Isi perkiraan tanggalnya.</span><span><b>Tidak memegang surat?</b> Cek jatuh temponya di Coretax, menu Pembayaran &gt; Pembuatan Kode Billing atas Tagihan Pajak. Tanggal terbit umumnya 1 bulan sebelum jatuh tempo.</span></small></div>'+
       '<div class="field"><label for="tgB">'+dateLabel+'</label><input id="tgB" type="date" value="'+vB+'">'+
         '<small class="fh"><span><b>Belum membayar?</b> Isi tanggal rencana bayar.</span>'+
         (o.kind==='sebagian' ? '<span><b>Sudah pernah membayar sebagian sanksi?</b> Pembayaran sebelum 8 Oktober 2026 tidak dihitung. Persentasenya dihitung dari sisa sanksi yang belum dibayar, untuk tiap STP atau kohir.</span>' : '')+
         '</small></div></div>'+
       '<p class="errmsg" id="tgmsg">'+(r.err||st.err||'')+'</p>'+
-      '<div class="row"><button class="btn" data-hitung="1">Lihat tarif</button></div></section>';
+      '<div class="row"><button class="btn" data-hitung="1">Lihat tarif dan langkahnya</button></div></div>'+
+      '<p class="eyebrow tiers-eb">Persyaratan menurut lampiran</p>'+tiersHTML(o,0,-1,null,null)+'</section>';
   }
 
   function scopeHTML(o, mark){
@@ -1269,7 +1278,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     const rel = o.mode==='rel';
     const T = rel ? D(st.a.tglT) : null;
     const ans = rel
-      ? 'Jawaban: '+o.docName+' terbit '+fdS(T)+', '+(o.verb==='pokok pajak dilunasi'?'dilunasi ':'dibayar ')+fdS(D(st.a.tglB))+'.'
+      ? 'Jawaban: '+dn(o)+' terbit '+fdS(T)+', '+(o.verb==='pokok pajak dilunasi'?'dilunasi ':'dibayar ')+fdS(D(st.a.tglB))+'.'
       : 'Jawaban: '+r.opt.t+'.';
     let pick;
     if(r.tier>=0){
@@ -1284,17 +1293,28 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
         '<ul><li>Tanggal atau periode ini tidak masuk baris mana pun pada tabel ini.</li></ul>'+kbWarn(r.out)+'</div></div>';
     }
     let nowTip = '';
-    if(!rel && r.tier<0){
+    if(rel){
+      /* Tarif yang lebih tinggi masih bisa dikejar jika batasnya belum lewat. */
+      const eff = effRanges(o,T), lim = r.tier<0 ? o.tiers.length : r.tier;
+      const j = eff.findIndex((e,i)=>i<lim && e.r && e.r[1]>=TODAY);
+      if(j>=0){
+        const t = o.tiers[j], hi = eff[j].r[1];
+        const act = o.kind==='sebagian' ? (t.pct===90?'10%':'25%')+' sanksi dibayar' : o.kind==='utang' ? 'utang pajak dilunasi' : 'pokok pajak dilunasi';
+        nowTip = '<div class="note info"><p>Masih bisa mendapat <b>'+t.pct+'%</b> jika '+act+' paling lambat <b>'+fdS(hi)+'</b> ('+dueText(hi)+').</p><div class="row"><button class="btn ghost" data-setb="'+new Date(hi).toISOString().slice(0,10)+'">Lihat tarif '+t.pct+'%</button></div></div>';
+      }
+    }
+    if(!rel){
       const cur = o.tiers.findIndex(t=>t.from && TODAY>=D(t.from) && TODAY<=D(t.until));
-      if(cur>=0) nowTip = '<div class="note info"><p>Jika belum dilakukan, periode yang sedang berjalan memberi pengurangan <b>'+o.tiers[cur].pct+'%</b> sampai '+fdS(D(o.tiers[cur].until))+' ('+dueText(D(o.tiers[cur].until))+').</p><div class="row"><button class="btn ghost" data-pick="bayar" data-v="w'+cur+'">Lihat periode itu</button></div></div>';
-      if(lama7(r.out)) nowTip += '<div class="note info"><p>STP-nya terbit sebelum 8 Oktober 2026, jadi tarif <b>90% atau 75%</b> (Lampiran C huruf e) masih dapat dipakai dengan membayar 10% atau 25% dari sanksi.</p><div class="row"><button class="btn ghost" data-pick="spt7" data-v="lain">Lihat tarif 90% atau 75%</button></div></div>';
+      if(cur>=0 && (r.tier<0 || r.tier>cur)) nowTip = '<div class="note info"><p>Masih bisa mendapat <b>'+o.tiers[cur].pct+'%</b> jika dilakukan dalam periode yang sedang berjalan, paling lambat <b>'+fdS(D(o.tiers[cur].until))+'</b> ('+dueText(D(o.tiers[cur].until))+').</p><div class="row"><button class="btn ghost" data-pick="bayar" data-v="w'+cur+'">Lihat tarif '+o.tiers[cur].pct+'%</button></div></div>';
+      if(r.tier<0 && lama7(r.out)) nowTip += '<div class="note info"><p>STP-nya terbit sebelum 8 Oktober 2026, jadi tarif <b>90% atau 75%</b> (Lampiran C huruf e) masih dapat dipakai dengan membayar 10% atau 25% dari sanksi.</p><div class="row"><button class="btn ghost" data-pick="spt7" data-v="lain">Lihat tarif 90% atau 75%</button></div></div>';
     }
     const belumNote = st.a.waktu==='belum' ? '<div class="note info"><p><b>Permohonan baru dapat diajukan setelah sanksinya terbit dalam STP.</b> Pengurangan atau penghapusan hanya dapat dimohonkan atas sanksi yang tercantum dalam SKP atau STP (Pasal 23 ayat (1) PMK 118/2024 s.t.d.d. PMK 71/2026). Sambil menunggu STP terbit, lakukan langkah di bawah dalam periode yang berlaku.</p></div>'
       : nanti(o) ? '<div class="note info"><p><b>Tanggal terbit yang diisi belum terjadi, jadi tarif ini perkiraan.</b> Tarif pastinya mengikuti tanggal terbit '+nanti(o)+' yang sebenarnya, dan permohonan baru dapat diajukan setelah '+nanti(o)+' terbit.</p></div>' : '';
+    const p14Note = st.a.sanksi==='p14' && o.notes.indexOf(NOTE_P14)>=0 ? '<div class="note info"><p>'+NOTE_P14+'</p></div>' : '';
     const cek = st.a.syarat==='cek' ? '<div class="note"><p class="nt">Syarat umum belum dipastikan</p><ul>'+SYARAT_UMUM.map(x=>'<li>'+x+'</li>').join('')+'</ul></div>' : '';
     const steps = '<div class="sect"><h3>Yang perlu dilakukan</h3><ol class="steps">'+stepsList(o,r).map(x=>'<li>'+x+'</li>').join('')+'</ol></div>';
     const head = '<section class="verdict" tabindex="-1"><div class="vhead"><p class="eyebrow">Hasil · '+TAHAP[o.tahap]+' · '+s.p+'</p><h2>'+o.name+'</h2></div>'+
-      pick+nowTip+belumNote+cek+steps+docsHTML(o,r)+ajukanHTML(o,r)+factsHTML(o, st.a.sanksi==='p14' && o.notes.indexOf(NOTE_P14)>=0 ? [NOTE_P14] : null)+scopeHTML(o, st.a.sanksi)+draftHTML()+
+      pick+nowTip+p14Note+belumNote+cek+steps+docsHTML(o,r)+ajukanHTML(o,r)+'<details class="dasar"><summary>Dasar aturan dan kondisi baris ini</summary><div class="fold">'+factsHTML(o)+'</div></details>'+scopeHTML(o, st.a.sanksi)+draftHTML()+
       '<div class="row"><button class="btn" data-copy="1">Salin ringkasan</button><button class="btn ghost" data-edit="'+(rel?'tglT':'bayar')+'">Ubah '+(rel?'tanggal':'periode')+'</button><button class="btn ghost" data-restart="1">Mulai ulang</button></div></section>';
     const calcBox = '<section class="calc"><h3>Hitung nominal</h3>'+
       '<div class="field"><label for="nom">Sanksi yang belum dibayar (Rp)<em>contoh</em></label><input id="nom" inputmode="numeric" autocomplete="off" value="'+st.nom+'"></div>'+
@@ -1509,6 +1529,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
       if(k==='tglT'){ st.keepT = st.a.tglT||''; st.keepB = st.a.tglB||''; }
       clearFrom(k); render(true); return;
     }
+    if(t.dataset.setb){ st.a.tglB = t.dataset.setb; st.keepB = t.dataset.setb; render(true); return; }
     if(t.dataset.ex){ st.a = Object.assign({},EX[t.dataset.ex]); st.err=''; render(true); return; }
     if(t.dataset.restart){ st.a={}; st.err=''; st.keepT=''; st.keepB=''; render(false); window.scrollTo({top:0}); return; }
     if(t.dataset.copy){ copyText(t, summaryText()); return; }
@@ -1520,7 +1541,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
       if(!T || !B){ msg.textContent = 'Isi kedua tanggal dulu.'; return; }
       const o = OUT[pre()];
       const ev = evalRel(o,T,B);
-      if(ev.s!=='ok'){ msg.textContent = ev.msg; return; }
+      if(ev.s!=='ok'){ msg.textContent = ev.msg.replace(o.docName, dn(o)); return; }
       st.a.tglT = T; st.a.tglB = B; st.err=''; render(true); return;
     }
   });
@@ -1543,6 +1564,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
       t.value = digits ? Number(digits).toLocaleString('id-ID') : '';
       st.nom = t.value; st.nomSet = true; updateCalc(); return;
     }
+    if(t.id==='tgT' || t.id==='tgB'){ const m = document.getElementById('tgmsg'); if(m) m.textContent = ''; return; }
     if(t.dataset && t.dataset.sp && t.tagName!=='SELECT') spInput(t);
   });
   document.addEventListener('change', function(e){
