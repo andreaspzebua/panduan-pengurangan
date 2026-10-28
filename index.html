@@ -130,7 +130,6 @@ a{color:var(--accent);text-underline-offset:3px}
 .pick .pk1{font-weight:700;font-size:1.05rem}
 .pick .pk2{color:var(--muted);font-size:14px;margin-top:2px}
 .pick ul{padding-left:1.1em;margin-top:6px;display:grid;gap:4px;font-size:14px}
-.due{display:inline-flex;flex-wrap:wrap;gap:4px 8px;margin-top:8px;font:500 12px/1.4 var(--font-mono);color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:4px 8px}
 .t0{background:var(--bad-soft);color:var(--bad);border:1px solid var(--bad-line)}
 .t100{background:var(--r100);color:var(--on-r100)}
 .t90{background:var(--r90);color:var(--on-r90)}
@@ -1142,15 +1141,6 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     }).join('')+'</div>';
   }
   /* Kalimat batas waktu untuk tarif terpilih, termasuk penjelasan jika ada dua ketentuan. */
-  function deadlineHTML(o,i,T){
-    const e = effRanges(o,T)[i]; if(!e.r) return '';
-    const t = o.tiers[i];
-    const what = o.verb==='pokok pajak dilunasi' ? 'pelunasan pokok pajak' : 'pembayaran '+(t.pct===90?'10%':'25%')+' sanksi';
-    let why = '';
-    const ends = e.ends.filter(x=>x!=null);
-    if(t.lines.length>1 && ends.length>1 && ends[0]!==ends[1]) why = ' Kedua ketentuan memberi batas '+ends.map(fdS).join(' dan ')+'; yang berlaku adalah yang lebih akhir.';
-    return '<p class="dl">Batas '+what+' untuk tarif ini: <b>'+fdS(e.r[1])+'</b>.'+why+'</p>';
-  }
 
   /* Cara mengajukan permohonan: KPP tempat terdaftar atau Coretax. */
   const AJU_PATH = ['Layanan Wajib Pajak','Layanan Administrasi','Buat Permohonan Layanan Administrasi','AS.26-03 Keberatan Non Keberatan','AS.26-03 LA.26-03 Permohonan Pengurangan atau Penghapusan Sanksi Administratif (Pasal 36 ayat (1) huruf a UU KUP)'];
@@ -1185,17 +1175,21 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     return s;
   }
 
-  function dueHTML(o,r){
-    if(r.tier<0) return '';
+  /* Satu kalimat batas waktu di kotak tarif. Ketentuan lengkap ada di bagian Persyaratan menurut lampiran. */
+  function pickDue(o,r){
     const t = o.tiers[r.tier];
-    if(o.mode==='win' && t.until){
-      const until = D(t.until), from = D(t.from);
-      if(TODAY<from) return '<span class="due">Periode mulai '+fdS(from)+' · berakhir '+fdS(until)+'</span>';
-      return '<span class="due">Batas periode ini '+fdS(until)+' · '+(TODAY<=until ? dueText(until) : 'sudah lewat')+'</span>';
+    if(o.mode==='rel' && r.ev && r.ev.range){
+      const lo = r.ev.range[0], hi = r.ev.range[1];
+      const what = o.verb==='pokok pajak dilunasi' ? 'pelunasan pokok pajak' : 'pembayaran '+(t.pct===90?'10%':'25%')+' sanksi';
+      const left = TODAY<=hi ? (r.tier===0 ? dueText(hi) : 'berakhir '+dueText(hi)) : 'sudah lewat';
+      return r.tier===0
+        ? '<p class="dl">Batas '+what+' untuk tarif ini: <b>'+fdS(hi)+'</b> ('+left+').</p>'
+        : '<p class="dl">Rentang '+what+' untuk tarif ini: <b>'+fdS(lo)+' s.d. '+fdS(hi)+'</b> ('+left+').</p>';
     }
-    if(o.mode==='rel' && r.ev.range){
-      const hi = r.ev.range[1];
-      return '<span class="due">Rentang bayar untuk tarif ini '+fdS(r.ev.range[0])+' s.d. '+fdS(hi)+' · '+(TODAY<=hi ? 'berakhir '+dueText(hi) : 'sudah berakhir')+'</span>';
+    if(o.mode==='win' && t.until){
+      const from = D(t.from), until = D(t.until);
+      if(TODAY<from) return '<p class="dl">Periode ini dimulai '+dueText(from)+'.</p>';
+      return '<p class="dl">'+(TODAY<=until ? 'Periode ini berakhir <b>'+fdS(until)+'</b> ('+dueText(until)+').' : 'Periode ini sudah berakhir pada '+fdS(until)+'.')+'</p>';
     }
     return '';
   }
@@ -1301,8 +1295,7 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
       const t = o.tiers[r.tier];
       pick = '<div class="pick"><div class="tile t'+t.pct+'">'+t.pct+'%<small>pengurangan</small></div><div>'+
         '<p class="pk1">Sanksi dikurangi '+t.pct+'%</p><p class="pk2">'+ans+'</p>'+
-        (rel ? deadlineHTML(o,r.tier,T) : '')+
-        '<ul>'+t.lines.map(l=>'<li>'+l+'</li>').join('')+'</ul>'+kbWarn(r.out)+dueHTML(o,r)+'</div></div>';
+        pickDue(o,r)+kbWarn(r.out)+'</div></div>';
     } else {
       pick = '<div class="pick"><div class="tile t0">0%<small>pengurangan</small></div><div>'+
         '<p class="pk1">Tidak ada pengurangan</p><p class="pk2">'+ans+'</p>'+
