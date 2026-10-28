@@ -940,7 +940,8 @@ if(typeof module!=='undefined') module.exports={SANKSI,OUT,OBJEK,OBJEK_BY_WAKTU,
     if(id==='spt7') return {h:'Kapan SPT yang didenda ini dilaporkan, dan apakah ada kurang bayarnya?', hint:'STP denda telat lapor bisa terbit sebelum SPT dilaporkan. Pilih sesuai kondisi SPT tersebut.',
       opts:[
         {v:'kb',t:'Belum dilaporkan sebelum 8 Oktober 2026, dan ada kurang bayar',d:'Tarif mengikuti tanggal SPT dilaporkan: 8 Okt–31 Des 2026 dapat 100%, Jan–Mar 2027 dapat 50%, Apr–Jun 2027 dapat 25%. Lunasi kurang bayarnya dulu, lalu laporkan SPT. Sanksi di STP tidak perlu dibayar.',s:'Lampiran A · Diktum KESATU huruf a'},
-        {v:'lain',t:'Sudah dilaporkan sebelum 8 Oktober 2026, atau tidak ada kurang bayar',d:'Termasuk SPT Kurang Bayar yang sudah dilaporkan sebelum 8 Oktober 2026. Bayar 10% dari sanksi untuk tarif 90%, atau 25% untuk tarif 75%.',s:'Lampiran C · Diktum KESATU huruf e'}
+        {v:'lain',t:'Sudah dilaporkan sebelum 8 Oktober 2026',d:'Termasuk SPT Kurang Bayar. Bayar 10% dari sanksi untuk tarif 90%, atau 25% untuk tarif 75%.',s:'Lampiran C · Diktum KESATU huruf e'},
+        {v:'nihil',t:'SPT-nya Nihil atau Lebih Bayar',d:'Sudah atau belum dilaporkan. Tetap dapat dikurangi karena STP-nya terbit sebelum 8 Oktober 2026: bayar 10% dari sanksi untuk tarif 90%, atau 25% untuk tarif 75%.',s:'Lampiran C · Diktum KESATU huruf e'}
       ]};
     if(id==='lapor' && a.sanksi==='p9'){
       const blm = a.waktu==='belum';
