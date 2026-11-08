@@ -319,6 +319,24 @@ a.btn{display:inline-block;text-decoration:none;text-align:center}
 .map2 dt{font-weight:600}
 .map2 dd{margin:0;color:var(--muted)}
 .jump{display:flex;flex-wrap:wrap;gap:8px}
+/* Tab Cara mengajukan */
+.paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.pathcard{border:1px solid var(--line-strong);border-radius:12px;padding:14px;display:grid;gap:8px;align-content:start;background:var(--surface-2)}
+.pathcard .eyebrow{color:var(--accent)}
+.pathcard p{font-size:14px}
+.pathcard .purl{font:500 12px/1.4 var(--font-mono);color:var(--muted);overflow-wrap:anywhere}
+.alur{list-style:none;padding:0;margin:0;display:grid;gap:20px}
+.alur>li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:start}
+.anum{width:30px;height:30px;border-radius:999px;background:var(--accent);color:var(--surface);display:grid;place-items:center;font:700 13px/1 var(--font-mono)}
+.abody{display:grid;gap:8px;min-width:0}
+.abody h3{padding-top:4px}
+.abody h4{font-size:14.5px;font-weight:700;margin:6px 0 0}
+.abody p{font-size:14px}
+.minicalc{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--surface-2);display:grid;gap:10px}
+.minicalc input,.minicalc select{background:var(--surface)}
+.opsi{display:inline-block;font:600 10px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-strong);border-radius:999px;padding:3px 6px;margin-right:6px;vertical-align:1px}
+.lamp .lnote{display:block;font-size:12.5px;color:var(--muted);margin-top:4px}
+.jalan{margin:-4px 0 14px}
 /* Tab Buat surat */
 textarea{resize:vertical;line-height:1.5}
 .shead{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
@@ -328,8 +346,11 @@ textarea{resize:vertical;line-height:1.5}
 .fgroup h3 .gn{font:600 12px var(--font-mono);color:var(--accent);margin-right:6px}
 .field.wide2{grid-column:1/-1}
 .lamp{list-style:none;padding:0;margin:0;display:grid;gap:8px;font-size:14px}
-.lamp li{display:grid;grid-template-columns:auto minmax(0,1fr) 6.5em;gap:8px;align-items:center}
-.lamp input[type=checkbox]{width:18px;height:18px;padding:0;margin:0;accent-color:var(--accent)}
+.lamp li{display:grid;grid-template-columns:auto minmax(0,1fr) 6.5em;gap:8px;align-items:start}
+.lamp li>span{padding-top:6px}
+.lamp li>span:has(> input){padding-top:0}
+.lamp li:has(> span > input) > input[type=checkbox]{margin-top:12px}
+.lamp input[type=checkbox]{width:18px;height:18px;padding:0;margin:8px 0 0;accent-color:var(--accent)}
 .lamp .lq{font-size:13px;padding:6px 8px}
 .lamp label{cursor:pointer;min-width:0}
 .seg{display:flex;flex-wrap:wrap;gap:8px}
@@ -359,13 +380,17 @@ textarea{resize:vertical;line-height:1.5}
 .paper .dname{font-weight:700}
 .paper .dsym{font-family:'Segoe UI Symbol','DejaVu Sans',sans-serif}
 @media (max-width:520px){
-  .tab{padding:10px 9px;font-size:13.5px}
+  .tabs{flex-wrap:wrap;gap:6px;overflow:visible;border-bottom:0;margin-block:18px 16px}
+  .tab{border:1px solid var(--line-strong);border-radius:999px;margin:0;padding:7px 12px;font-size:13.5px;background:var(--surface)}
+  .tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
   .wide{display:none}
   .map2{grid-template-columns:minmax(0,1fr);gap:2px}
   .map2 dd{margin-bottom:8px}
   .paper{padding:18px 14px;font-size:11.5px}
   .paper .dsig{margin-left:35%}
   .lamp li{grid-template-columns:auto minmax(0,1fr)}
+  .lamp li>span{padding-top:0}
+  .lamp input[type=checkbox]{margin-top:2px}
   .lamp .lq{grid-column:2;max-width:9em}
 }
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
@@ -396,7 +421,8 @@ textarea{resize:vertical;line-height:1.5}
     <button class="tab" role="tab" id="tab-qa" aria-selected="true" aria-controls="view" data-tab="qa">Tanya jawab</button>
     <button class="tab" role="tab" id="tab-baca" aria-selected="false" aria-controls="view" data-tab="baca">Baca surat</button>
     <button class="tab" role="tab" id="tab-surat" aria-selected="false" aria-controls="view" data-tab="surat">Buat surat</button>
-    <button class="tab" role="tab" id="tab-guide" aria-selected="false" aria-controls="view" data-tab="guide">Syarat<span class="wide"> dan istilah</span></button>
+    <button class="tab" role="tab" id="tab-ajukan" aria-selected="false" aria-controls="view" data-tab="ajukan">Cara mengajukan</button>
+    <button class="tab" role="tab" id="tab-guide" aria-selected="false" aria-controls="view" data-tab="guide">Syarat dan istilah</button>
   </div>
 
   <main id="view" role="tabpanel" aria-live="polite"></main>
@@ -1182,7 +1208,7 @@ const IMG = {
 <script id="app">
 (function(){
   const view = document.getElementById('view');
-  const st = {tab:'qa', a:{}, nom:'10.000.000', err:'', keepT:'', keepB:'', f:null, fx:true, doc:'permohonan', dlmsg:'', fromRes:''};
+  const st = {tab:'qa', a:{}, nom:'10.000.000', err:'', keepT:'', keepB:'', f:null, fx:true, doc:'permohonan', dlmsg:'', fromRes:'', ajN:'', ajT:100};
   const ORDER = ['waktu','objek','sanksi','spt7','kb7','lapor','keberatan','lunas','bayar','tglT','tglB'];
   const KLABEL = {waktu:'Terbit',objek:'Surat',sanksi:'Sanksi',spt7:'SPT',kb7:'Status SPT',lapor:'SPT disampaikan',keberatan:'Keberatan',lunas:'Pelunasan',bayar:'Periode',tglT:'Tanggal terbit',tglB:'Tanggal bayar'};
   const rp = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
@@ -1212,7 +1238,8 @@ const IMG = {
     '<div class="rrow"><span class="rtag t90">90% · 75%</span><p>Pokok pajak sudah lunas sebelum 8 Okt 2026, atau STP hanya berisi sanksi. Bayar 10% sanksi untuk 90%, atau 25% untuk 75%.</p></div>'+
     '<p class="rnote">Ini hanya gambaran umum. Pastikan kembali ke aturan, dan isi pertanyaan '+(tab?'di tab Tanya jawab':'di bawah')+' untuk panduan yang sesuai dengan kasus Anda.</p></section>';
   const CARI_STP = 'Nomor ketetapan dan tanggal jatuh temponya dapat dilihat di Coretax, menu Pembayaran › Pembuatan Kode Billing atas Tagihan Pajak. Tanggal terbit umumnya 1 bulan sebelum tanggal jatuh tempo.';
-  const bacaLink = t => '<button class="link inl" data-tab="baca">'+t+'</button>';
+  const tabLink = (tab,t) => '<button class="link inl" data-tab="'+tab+'">'+t+'</button>';
+  const bacaLink = t => tabLink('baca',t);
   const howBox = (items, title) => '<div class="howto"><h3>'+(title||'Cara menentukan pilihan')+'</h3><ul>'+items.map(x=>'<li>'+x+'</li>').join('')+'</ul></div>';
   const alasanText = pct => 'Sanksi administratif timbul karena kekhilafan atau bukan karena kesalahan Wajib Pajak. Wajib Pajak mengajukan permohonan '+(pct===100?'penghapusan sanksi administratif':'pengurangan sanksi administratif sebesar '+pct+'%')+' sesuai KEP-239/PJ/2026.';
   const nomVal = () => parseInt((st.nom||'').replace(/\D/g,''),10) || 0;
@@ -1432,7 +1459,9 @@ const IMG = {
     const d = qDef(id);
     const rules = d.rules ? '<ul class="rules">'+d.rules.map(x=>'<li>'+x+'</li>').join('')+'</ul>' : '';
     const opts = d.opts.map(o=>'<button class="opt'+(o.i===-1?' none':'')+(o.em?' em':'')+'" data-pick="'+id+'" data-v="'+o.v+'"><span class="t">'+o.t+'</span>'+(o.d?'<span class="d">'+o.d+'</span>':'')+(o.s?'<span class="s">'+o.s+'</span>':'')+'</button>').join('');
-    return (id==='waktu' && !Object.keys(st.a).length ? rumusHTML() : '')+'<section class="qcard" tabindex="-1"><h2>'+d.h+'</h2><p class="hint">'+d.hint+'</p>'+rules+'<p class="picklab">Pilih salah satu</p><div class="opts">'+opts+'</div>'+(d.extra||'')+'</section>';
+    const first = id==='waktu' && !Object.keys(st.a).length;
+    const jalan = '<p class="hint jalan">Sudah tahu tarif dan ketentuannya? '+tabLink('surat','Buat surat langsung')+' atau lihat '+tabLink('ajukan','cara mengajukan')+'.</p>';
+    return (first ? rumusHTML()+jalan : '')+'<section class="qcard" tabindex="-1"><h2>'+d.h+'</h2><p class="hint">'+d.hint+'</p>'+rules+'<p class="picklab">Pilih salah satu</p><div class="opts">'+opts+'</div>'+(d.extra||'')+'</section>';
   }
 
   function tanggalHTML(r){
@@ -1503,14 +1532,7 @@ const IMG = {
 
   /* Cara mengajukan permohonan: KPP tempat terdaftar atau Coretax. */
   const AJU_PATH = ['Layanan Wajib Pajak','Layanan Administrasi','Buat Permohonan Layanan Administrasi','AS.26-03 Keberatan Non Keberatan','AS.26-03 LA.26-03 Permohonan Pengurangan atau Penghapusan Sanksi Administratif (Pasal 36 ayat (1) huruf a UU KUP)'];
-  const AJU_LAMP = ['Alasan penghapusan sanksi.','Scan SKP atau STP yang dimohonkan.','Surat pernyataan sesuai KEP-239/PJ/2026 (lampiran F dan G).','Bukti pelunasan pokok pajak, dalam hal terdapat pokok dalam STP, atau bukti pembayaran sebagian sanksi administratif.','Surat Kuasa Khusus, jika surat ditandatangani Kuasa.','Salinan surat permohonan pencabutan gugatan atau upaya hukum lain, jika pernah diajukan. Pencabutannya diajukan lebih dulu, terpisah, ke tempat gugatan atau upaya hukum itu diajukan (Diktum KEEMPAT huruf b).'];
-  const ajuLead = () => 'Sampaikan permohonan paling lambat 1 Oktober 2028 ('+dueText(D(PERMOHONAN))+') ke KPP tempat Wajib Pajak terdaftar, atau melalui Coretax menu:';
-  const ajuText = () => ajuLead()+'\n   '+AJU_PATH.join(' > ')+'\n   Panduan langkah penginputan di Coretax (PDF) dan aturan terkait: '+TEMPLATE_URL+'\n   Permohonan juga dapat dikirim ke KPP tempat Wajib Pajak terdaftar melalui pos, perusahaan jasa ekspedisi, atau jasa kurir.\n   Sertakan atau unggah:\n'+AJU_LAMP.map(x=>'   - '+x).join('\n')+'\n   Pengurangan tidak diberikan otomatis.';
   const pathHTML = () => '<span class="path">'+AJU_PATH.map((x,i)=>'<span style="padding-left:'+(i*10)+'px">'+(i?'<i aria-hidden="true">› </i>':'')+x+'</span>').join('')+'</span>';
-  const ajuHTML = () => ajuLead()+pathHTML()+
-    '<span class="sub">Panduan langkah penginputan di Coretax (PDF) dan aturan terkait ada di folder <a href="'+TEMPLATE_URL+'" target="_blank" rel="noopener">bit.ly/psa428</a>.</span>'+
-    '<span class="sub">Permohonan juga dapat dikirim ke KPP tempat Wajib Pajak terdaftar melalui pos, perusahaan jasa ekspedisi, atau jasa kurir.</span>'+
-    'Sertakan atau unggah:<ul>'+AJU_LAMP.map(x=>'<li>'+x+'</li>').join('')+'</ul><span class="sub">Pengurangan tidak diberikan otomatis.</span>';
 
   /* Langkah yang perlu dilakukan, ditulis sebagai teks biasa agar ikut disalin. */
   function stepsList(o,r){
@@ -1675,7 +1697,7 @@ const IMG = {
     return '<div class="guide">'+rumusHTML(true)+
       '<section class="gsec"><h2>Tanggal penting</h2><p class="hint">Baris yang dihitung dari tanggal terbit, misalnya hasil pemeriksaan, punya batas sendiri. Aplikasi menghitungnya di langkah terakhir.</p><ul class="tl">'+items.join('')+'</ul></section>'+
       '<section class="gsec"><h2>Template, aturan, dan panduan Coretax</h2><p class="hint">Dokumen yang dilampirkan pada permohonan: surat permohonan pengurangan atau penghapusan sanksi, surat pernyataan tidak mengajukan gugatan atau upaya hukum lain (lampiran F), dan surat pernyataan sanksi timbul karena kekhilafan atau bukan karena kesalahan (lampiran G). Folder yang sama juga memuat aturan terkait, buku panduan PSA dari DJP, dan PDF langkah-langkah pengajuan di Coretax. Ketiga surat juga bisa langsung dibuat dalam format Word di tab <button class="link inl" data-tab="surat">Buat surat</button>.</p>'+tplBox('Folder Google Drive berisi template surat, aturan terkait, buku panduan PSA dari DJP, dan PDF panduan penginputan permohonan di Coretax.')+'</section>'+
-      '<section class="gsec"><h2>Cara mengajukan permohonan</h2><div class="aju">'+ajuHTML()+'</div><p class="hint">Formulir permohonannya sama dengan permohonan Pasal 36 ayat (1) huruf a UU KUP biasa. Yang membuatnya diproses sebagai permohonan KEP-239 adalah dua surat pernyataan (lampiran F dan G), satu set untuk setiap SKP atau STP.</p><p class="hint">Saat mengisi formulir di Coretax: pilih Keadaan Kahar "Tidak"; pilih "Penghapusan" jika tarifnya 100% dan "Pengurangan" untuk tarif lain; isi Jumlah Sanksi Administratif Menurut Wajib Pajak dengan sanksi yang tetap ditanggung setelah pengurangan (Rp 0 untuk penghapusan).</p></section>'+
+      '<section class="gsec"><h2>Cara mengajukan permohonan</h2><p class="hint">Alur pengajuan, dokumen yang perlu disiapkan, isian formulir di Coretax, dan pengajuan langsung ke KPP ada di tab Cara mengajukan.</p><div class="row"><button class="btn ghost" data-tab="ajukan">Buka tab Cara mengajukan</button></div></section>'+
       '<section class="gsec"><h2>Syarat umum</h2><p class="hint">Diktum KETIGA dan KEEMPAT KEP-239/PJ/2026, serta Pasal 23 ayat (5) huruf a PMK 118/2024 s.t.d.d. PMK 71/2026. Berlaku untuk semua baris.</p><ul class="rules">'+SYARAT_UMUM.map(s=>'<li>'+s+'</li>').join('')+'</ul></section>'+
       '<section class="gsec"><h2>Syarat formal permohonan</h2><p class="hint">Petikan Pasal 23 dan 24 pada lampiran huruf H KEP-239/PJ/2026.</p><ul class="rules">'+SYARAT_FORMAL.map(s=>'<li>'+s+'</li>').join('')+'<li>'+SYARAT_KECUALI+'</li></ul></section>'+
       '<section class="gsec"><h2>Istilah</h2><dl class="gloss">'+ISTILAH.map(x=>'<dt>'+x[0]+'</dt><dd>'+x[1]+'</dd>').join('')+'</dl></section>'+
@@ -1685,8 +1707,66 @@ const IMG = {
       '</ul></section></div>';
   }
 
+  /* Cara mengajukan: titik awal, alur umum untuk semua tarif, dan isian formulir Coretax. */
+  const AJU_DOCS = [
+    {n:'Surat permohonan', d:'Satu surat untuk satu SKP atau STP, berisi jumlah sanksi menurut Wajib Pajak dan alasannya, ditandatangani Wajib Pajak, Wakil, atau Kuasa.'},
+    {n:'Surat pernyataan tidak mengajukan gugatan dan/atau upaya hukum lainnya', d:'Format F KEP-239/PJ/2026, ditandatangani di atas meterai.'},
+    {n:'Surat pernyataan sanksi timbul karena kekhilafan atau bukan karena kesalahan', d:'Format G KEP-239/PJ/2026, ditandatangani di atas meterai.'},
+    {n:'SKP atau STP yang dimohonkan', d:'Fotokopi untuk pengajuan langsung ke KPP, atau hasil scan untuk Coretax.'},
+    {n:'Bukti pembayaran yang menjadi syarat tarifnya', d:'Misalnya bukti pelunasan pokok pajak atau utang pajak, atau bukti pembayaran 10% atau 25% dari sanksi. Daftar yang tepat untuk kasus Anda ada di hasil Tanya jawab.'},
+    {n:'Surat Kuasa Khusus', d:'Hanya jika surat ditandatangani Kuasa.', opt:1},
+    {n:'Salinan surat permohonan pencabutan gugatan atau upaya hukum lainnya', d:'Hanya jika pernah mengajukan gugatan atau upaya hukum lain atas SKP atau STP yang dimohonkan.', opt:1}
+  ];
+  const ajNom = () => parseInt((st.ajN||'').replace(/\D/g,''),10) || 0;
+  function ajOut(){
+    const n = ajNom(), p = st.ajT;
+    if(!n) return 'Isi sisa sanksi untuk melihat angka yang diisi di Coretax.';
+    if(p===100) return 'Isi <b>Rp 0</b> dan pilih <b>Penghapusan</b>. Seluruh sanksi '+rp(n)+' dimohonkan dihapus.';
+    return 'Isi <b>'+rp(n*(100-p)/100)+'</b> ('+(100-p)+'% dari sanksi) dan pilih <b>Pengurangan</b>. Sanksi yang dimohonkan dikurangi '+rp(n*p/100)+'.';
+  }
+  function ajuTabHTML(){
+    const it = (n,k,v,x) => '<div><dt>'+n+' · '+k+'</dt><dd>'+v+(x?'<small>'+x+'</small>':'')+'</dd></div>';
+    const step = (n,h,b) => '<li><span class="anum" aria-hidden="true">'+n+'</span><div class="abody"><h3>'+h+'</h3>'+b+'</div></li>';
+    const tarifOpt = [100,90,75,50,25].map(p=>'<option value="'+p+'"'+(st.ajT===p?' selected':'')+'>'+p+'% · '+(p===100?'penghapusan':'pengurangan')+'</option>').join('');
+    const s1 = '<p>Lakukan yang menjadi syarat tarifnya dalam periode yang berlaku: melunasi pokok pajak atau utang pajak, membayar 10% atau 25% dari sanksi, atau menyampaikan SPT atau pembetulannya. Tarif dan batas waktu untuk kasus Anda dapat dilihat di tab '+tabLink('qa','Tanya jawab')+'.</p>'+
+      '<p class="hint">Jika pernah mengajukan gugatan atau upaya hukum lain atas SKP atau STP yang dimohonkan, ajukan pencabutannya lebih dulu secara terpisah ke tempat gugatan atau upaya hukum itu diajukan (Diktum KEEMPAT huruf b). Syarat lengkapnya ada di tab '+tabLink('guide','Syarat dan istilah')+'.</p>';
+    const s2 = '<p>Satu set dokumen untuk setiap SKP atau STP. Centang yang sudah siap.</p><ul class="cklist doc">'+
+      AJU_DOCS.map(x=>'<li><label><input type="checkbox"><span><b>'+x.n+'</b>'+(x.opt?' <span class="opsi">Opsional</span>':'')+'<small>'+x.d+'</small></span></label></li>').join('')+'</ul>';
+    const s3 = '<h4>Cara 1 · Lewat Coretax</h4>'+pathHTML()+
+      '<p class="hint">Isian formulir, sesuai urutan di Coretax:</p><dl class="ctx">'+
+        it(1,'Keadaan Kahar (Force Majeure)','<b>Tidak</b>','Pilih Tidak untuk permohonan berdasarkan KEP-239.')+
+        it(2,'Transaksi','<b>Nomor SKP atau STP yang dimohonkan</b>','Tekan ikon kaca pembesar, lalu Refresh. Jika belum muncul, atur Tanggal Transaksi sesuai tanggal terbit surat.')+
+        it(3,'Pengurangan/Penghapusan','<b>Penghapusan</b> untuk tarif 100%, <b>Pengurangan</b> untuk tarif lainnya')+
+        it(4,'Permohonan Pertama/Kedua','<b>Pertama</b>','Pilih Kedua jika sanksi dalam surat ini sudah pernah dimohonkan.')+
+        it(5,'Jumlah Sanksi Administratif Menurut Wajib Pajak','<b>Sanksi yang tetap ditanggung setelah pengurangan</b>','Sisa sanksi dikali (100% dikurangi tarif). Rp 0 untuk penghapusan. Hitung di kotak di bawah.')+
+        it(6,'Alasan','<b>Sanksi timbul karena kekhilafan atau bukan karena kesalahan</b>','Sebutkan juga bahwa permohonan diajukan sesuai KEP-239/PJ/2026. Hasil Tanya jawab menyediakan kalimat alasan yang siap disalin.')+
+        it(7,'Dokumen','<b>Unggah hasil scan dokumen</b>','Semua dokumen dari langkah 2 diunggah lewat menu Dokumen > Unggah. Setelah itu kembali ke Alur Kasus, tanda tangani dengan passphrase, lalu tekan Lanjut untuk mengirim.')+
+      '</dl>'+
+      '<div class="minicalc"><p class="eyebrow">Hitung jumlah sanksi menurut Wajib Pajak</p><div class="fields">'+
+        '<div class="field"><label for="ajNom">Sisa sanksi per 8 Oktober 2026 (Rp)</label><input id="ajNom" inputmode="numeric" autocomplete="off" value="'+esc(st.ajN)+'" placeholder="misalnya 1.000.000"><small class="fh">Isi jumlah sanksi yang tercantum di SKP atau STP. Jika sebagian sanksi sudah dibayar sebelum 8 Oktober 2026, isi sisanya saja yang belum dibayar.</small></div>'+
+        '<div class="field"><label for="ajTarif">Tarif pengurangan</label><select id="ajTarif">'+tarifOpt+'</select></div>'+
+      '</div><p class="calcmsg" id="ajOut">'+ajOut()+'</p></div>'+
+      '<p class="hint">Panduan langkah penginputan di Coretax (PDF) ada di folder <a href="'+TEMPLATE_URL+'" target="_blank" rel="noopener">bit.ly/psa428</a>.</p>'+
+      '<h4>Cara 2 · Langsung ke KPP</h4><p>Sampaikan surat permohonan beserta dokumen dari langkah 2 ke KPP tempat Wajib Pajak terdaftar, atau kirim lewat pos, perusahaan jasa ekspedisi, atau jasa kurir.</p>';
+    const s4 = '<ul class="rules"><li>Simpan bukti penerimaan permohonan, yaitu tanda terima dari KPP atau bukti penerimaan di Coretax.</li>'+
+      '<li>Keputusan atas permohonan diterbitkan oleh Direktur Jenderal Pajak.</li>'+
+      '<li>Permohonan dapat diajukan paling banyak dua kali. Untuk denda PBB hanya satu kali. Permohonan kedua disampaikan paling lama 3 bulan sejak tanggal surat keputusan atas permohonan pertama dikirim (Pasal 24 PMK 118/2024 s.t.d.d. PMK 71/2026).</li></ul>';
+    return '<div class="guide">'+
+      '<section class="gsec"><h2>Cara mengajukan permohonan</h2>'+
+        '<p>Permohonan pengurangan atau penghapusan sanksi administratif (PSA) disampaikan paling lambat <b>1 Oktober 2028</b> ('+dueText(D(PERMOHONAN))+'). Pengurangan tidak diberikan otomatis, jadi permohonan tetap perlu diajukan setelah syarat tarifnya terpenuhi.</p>'+
+        '<p class="picklab">Mulai dari mana?</p><div class="paths">'+
+          '<div class="pathcard"><p class="eyebrow">Belum tahu ketentuannya</p><h3>Cek di tab Tanya jawab</h3><p>Belum mengetahui sanksi dalam SKP atau STP Anda dapat dikurangi atau dihapus dengan ketentuan yang mana? Jawab beberapa pertanyaan singkat. Hasil akhirnya memuat tarif, batas waktu, dokumen, dan tata cara pengajuan seperti di tab ini, sudah disesuaikan dengan kasus Anda.</p><div class="row"><button class="btn" data-tab="qa">Mulai tanya jawab</button></div></div>'+
+          '<div class="pathcard"><p class="eyebrow">Sudah tahu ketentuannya</p><h3>Ambil template dan panduan</h3><p>Hanya membutuhkan template surat atau panduan pengajuan? Folder Google Drive berisi template surat permohonan dan surat pernyataan, aturan terkait, buku panduan PSA dari DJP, serta PDF langkah penginputan permohonan di Coretax.</p><div class="row"><a class="btn" href="'+TEMPLATE_URL+'" target="_blank" rel="noopener">Buka folder Google Drive</a></div><span class="purl">'+TEMPLATE_URL+'</span></div>'+
+        '</div>'+
+        '<div class="note info"><p><b>Surat dapat dibuat otomatis.</b> Surat permohonan dan kedua surat pernyataan (format F dan G) dapat langsung dibuat dalam satu file Word di tab Buat surat, tanpa mengetik ulang dari template.</p><div class="row"><button class="btn ghost" data-tab="surat">Buat surat</button></div></div>'+
+      '</section>'+
+      '<section class="gsec"><h2>Alur pengajuan</h2><p class="hint">Berlaku untuk semua tarif. Tarif, batas waktu, dan daftar dokumen yang tepat untuk kasus tertentu ada di hasil Tanya jawab.</p><ol class="alur">'+
+        step(1,'Penuhi syarat tarifnya',s1)+step(2,'Siapkan dokumen',s2)+step(3,'Sampaikan permohonan',s3)+step(4,'Setelah permohonan diajukan',s4)+
+      '</ol></section></div>';
+  }
+
   /* Navigasi tab */
-  const TABHASH = {qa:'', baca:'baca', surat:'surat', guide:'panduan'};
+  const TABHASH = {qa:'', baca:'baca', surat:'surat', ajukan:'ajukan', guide:'panduan'};
   function goTab(tab, scroll){
     st.tab = tab; render(false);
     try{ history.replaceState(null, '', location.pathname + location.search + (TABHASH[tab] ? '#'+TABHASH[tab] : '')); }catch(e){}
@@ -1770,6 +1850,7 @@ const IMG = {
   const SITE_URL = 'https://andreaspzebua.github.io/panduan-pengurangan/';
   const IDENT = ['nama','npwp','jabatan','alamat','telp','wpNama','wpNpwp','wpAlamat','kpp','nomorSurat','kota','nop','nopAlamat'];
   const todayISO = () => new Date(TODAY).toISOString().slice(0,10);
+  const LAMP_OPT = {kuasa:'Hanya jika surat ditandatangani Kuasa.', cabut:'Hanya jika pernah mengajukan gugatan atau upaya hukum lain dan sudah dicabut.', lain:'Dokumen pendukung lain, jika ada.'};
   const lampDefault = () => ({ket:{on:true},F:{on:true},G:{on:true},bayar:{on:true,n:''},kuasa:{on:false},cabut:{on:false},lain:{on:false,n:''}});
   function alasanSurat(jenis, kata, dasar, kondisi){
     return 'Sanksi administratif dalam '+jenis+' tersebut timbul karena kekhilafan atau bukan karena kesalahan Wajib Pajak.'+(kondisi?' '+kondisi:'')+
@@ -1848,7 +1929,7 @@ const IMG = {
       fld('masa','Masa atau tahun pajak',{ph:'misalnya 2025 atau Januari 2026',help:'Empat angka dibaca sebagai tahun pajak.'})+
       (d.pbb ? fld('nop','NOP')+fld('nopAlamat','Alamat objek pajak')+fld('pbbTerutang','PBB terutang (Rp)',{num:1}) : '')+
       '</div>');
-    const g2 = grp('2','Sanksi dan tarif','<div class="fields">'+
+    const g2 = grp('2','Sanksi dan tarif','<p class="hint"><b>Masih bingung dengan tarif pengurangannya?</b> Cek di tab '+tabLink('qa','Tanya jawab')+'. Setelah pertanyaannya dijawab, tekan "Isi dari hasil Tanya jawab" di bagian atas supaya sanksi, tarif, dan alasan terisi otomatis.</p><div class="fields">'+
       fld('sanksiText','Sanksi yang dimohonkan',{area:1,rows:3,wide:1,help:'Dipakai di surat pernyataan sanksi karena kekhilafan (Lampiran G).'})+
       fld('sanksi','Sisa sanksi per 8 Oktober 2026 (Rp)',{num:1,help:'Isi jumlah sanksi yang tercantum di SKP atau STP. Jika sebagian sanksi sudah dibayar sebelum 8 Oktober 2026, isi sisanya saja yang belum dibayar.'})+
       fld('tarif','Tarif pengurangan',{sel:[[100,'100% · penghapusan'],[90,'90% · pengurangan'],[75,'75% · pengurangan'],[50,'50% · pengurangan'],[25,'25% · pengurangan']]})+
@@ -1869,9 +1950,10 @@ const IMG = {
       const nm = L.k==='ket' ? '<label for="fl_ket">Fotokopi '+SURAT.JENIS[f.jenisSurat].full+' yang dimohonkan</label>'
         : (L.k==='bayar' || L.k==='lain') ? '<input id="fn_'+L.k+'" data-fn="'+L.k+'" autocomplete="off" value="'+esc(v.n||'')+'" placeholder="'+(L.k==='lain'?'Dokumen lain':'Bukti pembayaran')+'" aria-label="Nama dokumen">'
         : '<label for="fl_'+L.k+'">'+L.n+'</label>';
-      return '<li><input type="checkbox" id="fl_'+L.k+'" data-fl="'+L.k+'"'+(v.on?' checked':'')+' aria-label="Lampirkan"><span>'+nm+'</span><input class="lq" id="fq_'+L.k+'" data-fq="'+L.k+'" autocomplete="off" value="'+esc(v.q||L.q)+'" aria-label="Set atau lembar"></li>';
+      const opt = LAMP_OPT[L.k] ? '<small class="lnote"><span class="opsi">Opsional</span>'+LAMP_OPT[L.k]+'</small>' : '';
+      return '<li><input type="checkbox" id="fl_'+L.k+'" data-fl="'+L.k+'"'+(v.on?' checked':'')+' aria-label="Lampirkan"><span>'+nm+opt+'</span><input class="lq" id="fq_'+L.k+'" data-fq="'+L.k+'" autocomplete="off" value="'+esc(v.q||L.q)+'" aria-label="Set atau lembar"></li>';
     }).join('');
-    const g5 = grp('5','Lampiran','<p class="hint">Centang dokumen yang dilampirkan. Jumlahnya otomatis ditulis di baris "Lampiran" surat permohonan.</p><ul class="lamp">'+lamp+'</ul>');
+    const g5 = grp('5','Lampiran','<p class="hint">Centang dokumen yang dilampirkan. Jumlahnya otomatis ditulis di baris "Lampiran" surat permohonan. Dokumen bertanda Opsional dilampirkan hanya jika keadaannya sesuai.</p><ul class="lamp">'+lamp+'</ul>');
     const L = SURAT.letters(f);
     const prev = '<section class="gsec"><h2>Pratinjau dan unduh</h2><div class="seg" role="group" aria-label="Pilih surat">'+
       L.map(x=>'<button data-doc="'+x.id+'" aria-pressed="'+(st.doc===x.id)+'">'+x.name+'<small>'+x.ref+'</small></button>').join('')+'</div>'+
@@ -1880,7 +1962,9 @@ const IMG = {
       '<ul class="rules"><li>Ketiga surat ada dalam satu file, masing-masing mulai di halaman baru. Periksa isinya, lalu cetak.</li>'+
       '<li>Kedua surat pernyataan ditandatangani di atas meterai.</li>'+
       '<li>Untuk pengajuan lewat Coretax, scan surat yang sudah ditandatangani lalu unggah. Untuk pengajuan langsung ke KPP, lampirkan aslinya.</li></ul></section>';
-    return '<div class="guide">'+head+'<section class="gsec">'+g1+g2+g3+g4+g5+'</section>'+prev+'</div>';
+    const next = '<section class="gsec"><h2>Setelah surat siap</h2><p class="hint">Lengkapi dokumen lainnya, lalu sampaikan permohonan lewat Coretax atau langsung ke KPP paling lambat 1 Oktober 2028. Alur lengkap, daftar dokumen, dan isian formulir Coretax ada di tab Cara mengajukan.</p><div class="row"><button class="btn ghost" data-tab="ajukan">Lihat cara mengajukan</button></div>'+
+      tplBox('Template surat dalam format Word, aturan terkait, buku panduan PSA dari DJP, dan PDF langkah penginputan permohonan di Coretax.')+'</section>';
+    return '<div class="guide">'+head+'<section class="gsec">'+g1+g2+g3+g4+g5+'</section>'+prev+next+'</div>';
   }
   function updatePreview(){
     const box = document.getElementById('paper'); if(!box || !st.f) return;
@@ -1908,6 +1992,7 @@ const IMG = {
   function lampInput(t){
     const k = t.dataset.fn || t.dataset.fq;
     st.f.lamp[k][t.dataset.fn ? 'n' : 'q'] = t.value;
+    if(t.dataset.fn && t.value.trim() && !st.f.lamp[k].on){ st.f.lamp[k].on = true; const c = document.getElementById('fl_'+k); if(c) c.checked = true; }
     updatePreview();
   }
   let DLP = null;
@@ -1975,10 +2060,11 @@ const IMG = {
   }
 
   function render(focus){
-    ['qa','baca','surat','guide'].forEach(k=>document.getElementById('tab-'+k).setAttribute('aria-selected', st.tab===k));
+    ['qa','baca','surat','ajukan','guide'].forEach(k=>document.getElementById('tab-'+k).setAttribute('aria-selected', st.tab===k));
     document.querySelector('.wrap').classList.toggle('lebar', st.tab==='baca');
     if(st.tab==='baca'){ view.innerHTML = bacaHTML(); return; }
     if(st.tab==='surat'){ view.innerHTML = suratHTML(); updatePreview(); return; }
+    if(st.tab==='ajukan'){ view.innerHTML = ajuTabHTML(); return; }
     if(st.tab==='guide'){ view.innerHTML = guideHTML(); return; }
     const r = resolve(st.a);
     view.innerHTML = trailHTML() + (r.q ? questionHTML(r) : resultHTML(r));
@@ -2042,17 +2128,23 @@ const IMG = {
       t.value = digits ? Number(digits).toLocaleString('id-ID') : '';
       st.nom = t.value; st.nomSet = true; updateCalc(); return;
     }
+    if(t.id==='ajNom'){
+      const digits = t.value.replace(/\D/g,'').slice(0,15);
+      t.value = digits ? Number(digits).toLocaleString('id-ID') : '';
+      st.ajN = t.value; document.getElementById('ajOut').innerHTML = ajOut(); return;
+    }
     if(t.id==='tgT' || t.id==='tgB'){ const m = document.getElementById('tgmsg'); if(m) m.textContent = ''; return; }
     if(t.dataset && t.dataset.f && t.tagName!=='SELECT'){ formInput(t); return; }
     if(t.dataset && (t.dataset.fn || t.dataset.fq)){ lampInput(t); return; }
   });
   document.addEventListener('change', function(e){
     const t = e.target;
+    if(t.id==='ajTarif'){ st.ajT = Number(t.value); document.getElementById('ajOut').innerHTML = ajOut(); return; }
     if(t.dataset && t.dataset.f && t.tagName==='SELECT') formChange(t);
     if(t.dataset && t.dataset.fl){ st.f.lamp[t.dataset.fl].on = t.checked; updatePreview(); }
   });
   document.getElementById('today').innerHTML = todayLine();
-  const HASH = {baca:'baca', surat:'surat', panduan:'guide'};
+  const HASH = {baca:'baca', surat:'surat', ajukan:'ajukan', panduan:'guide'};
   const fromHash = () => { try{ st.tab = HASH[location.hash.slice(1)] || 'qa'; }catch(e){} };
   fromHash();
   window.addEventListener('hashchange', function(){ fromHash(); render(false); });
